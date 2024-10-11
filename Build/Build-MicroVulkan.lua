@@ -14,8 +14,16 @@ project "MicroVulkan"
 	targetdir "%{wks.location}/bin/"
 	objdir "%{wks.location}/bin-int/%{prj.name}"
 
-	includedirs { "%{wks.location}/MicroVulkan/" }
-	externalincludedirs { "%{wks.location}/MicroVulkan/" }
+	vulkan = os.getenv( "VULKAN_PATH" )
+
+	includedirs { 
+		"%{wks.location}/MicroVulkan/",
+        vulkan.."/Include/" 
+    }
+	externalincludedirs { 
+		"%{wks.location}/MicroVulkan/",
+        vulkan.."/Include/" 
+	}
 
 	filter "system:windows"
 		systemversion "latest"
