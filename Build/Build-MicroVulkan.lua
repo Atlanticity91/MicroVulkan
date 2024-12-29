@@ -1,48 +1,75 @@
 project "MicroVulkan"
 	kind "StaticLib"
 	language "C++"
-	cppdialect "C++20"
 	staticruntime "off"
 
-	defines { "_CRT_SECURE_NO_WARNINGS" }
+	--- OUTPUT
+	targetdir "%{OutputDirs.Bin}/%{cfg.buildcfg}/"
+	debugdir "%{OutputDirs.Bin}/%{cfg.buildcfg}/"
+	objdir "%{OutputDirs.BinInt}/%{prj.name}-%{cfg.buildcfg}"
 
-	files { "../MicroVulkan/**.h", "../MicroVulkan/**.cpp" }
-
-	pchheader "__micro_vulkan_pch.h"
-	pchsource "../MicroVulkan/__micro_vulkan_pch.cpp"
-
-	targetdir "%{wks.location}/bin/"
-	objdir "%{wks.location}/bin-int/%{prj.name}"
-
-	vulkan = os.getenv( "VULKAN_PATH" )
-
-	includedirs { 
-		"%{wks.location}/MicroVulkan/",
-        vulkan.."/Include/" 
-    }
-	externalincludedirs { 
-		"%{wks.location}/MicroVulkan/",
-        vulkan.."/Include/" 
+	--- GLOBAL INCLUDES
+	includedirs {
+		"%{IncludeDirs.MicroVulkan}",
+		"%{IncludeDirs.vulkan}"
+	}
+	
+	externalincludedirs {
+		"%{IncludeDirs.MicroVulkan}",
+		"%{IncludeDirs.Vulkan}"
 	}
 
+	--- PRECOMPILED HEADER
+	pchheader "__micro_vulkan_pch.h"
+
+	--- GLOBAL SOURCE FILES
+	files { 
+		"%{IncludeDirs.MicroVulkan}/**.h", 
+		"%{IncludeDirs.MicroVulkan}/**.cpp" 
+	}
+
+	-- LINUX
+	filter "system:linux"
+		systemversion "latest"
+
+		--- DEFINES
+		defines { "LINUX" }
+
+	-- WINDOWS
 	filter "system:windows"
 		systemversion "latest"
-		defines { "WINDOWS" }
-		flags { "MultiProcessorCompile" }
+		cppdialect "C++20"
+		flags "MultiProcessorCompile"
+		
+		--- DEFINES
+		defines { 
+			"WINDOWS",
+			"_CRT_SECURE_NO_WARNINGS"
+		}
 
+		-- PRECOMPILED SOURCE
+		pchsource "../MicroVulkan/__micro_vulkan_pch.cpp"
+
+	--- CONFIGURATION
 	filter "configurations:Debug"
-		defines { "DEBUG" }
 		runtime "Debug"
 		symbols "On"
 
+		--- DEFINES
+		defines { "DEBUG" }
+
 	filter "configurations:Release"
-		defines { "RELEASE" }
 		runtime "Release"
 		optimize "On"
 		symbols "On"
 
+		--- DEFINES
+		defines { "RELEASE" }
+
 	filter "configurations:Dist"
-		defines { "DIST" }
 		runtime "Release"
 		optimize "On"
 		symbols "Off"
+
+		--- DEFINES
+		defines { "DIST" }
