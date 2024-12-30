@@ -1,7 +1,9 @@
+--- TOOL INCLUDES
 include "Premake/CSExtensions.lua"
 include "Premake/VSExtensions.lua"
 include "Build-Dependencies.lua"
 
+--- PROJECT CONFIGURATION
 workspace "Micro Solution"
     architecture "x64"
     startproject "MicroCore"
@@ -12,23 +14,26 @@ workspace "Micro Solution"
         "Dist" 
     }
 
+    --- GLOBAL FLAGS
     flags "MultiProcessorCompile"
 
-    -- Workspace-wide build options for MSVC
+    --- WINDOWS
     filter "system:windows"
+        --- WORKSPACE-WIDE BUILD OPTIONS FOR MSVC
         buildoptions { 
             "/EHsc",
             "/Zc:preprocessor", 
             "/Zc:__cplusplus" 
         }
 
-    --- Thirdparty Projects
+    --- THIRDPARTY PROJECTS
     group "Thirdparty"
         include "Thirdparty/Build-Header-Vulkan.lua"
         include "Thirdparty/Build-Header-Shaderc.lua"
         include "Thirdparty/Build-Header-Spirv.lua"
+    --- TEST PROJECTS
     group "Test"
     group ""
 
-    --- Main Project
+    --- MAIN PROJECT
     include "Build-MicroVulkan.lua"
