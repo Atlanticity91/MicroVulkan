@@ -2,6 +2,7 @@ project "MicroVulkan"
 	kind "StaticLib"
 	language "C++"
 	staticruntime "off"
+	location "%{OutputDirs.Solution}"
 
 	--- OUTPUT
 	targetdir "%{OutputDirs.Bin}/%{cfg.buildcfg}/"
