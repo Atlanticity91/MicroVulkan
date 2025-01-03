@@ -49,12 +49,10 @@ def clear_paths( ) :
 def call_premake( ) :
 	print( '\n> Calling Premake5 :')
 
-	premake_call = [ '--file=Build\\Build.lua', f'--vk_version={VulkanRequirements.SDK_Version}' ]
-
-	args = sys.argv
-	args.pop( 0 )
-
-	premake_call.extend( args )
+	premake_call = [ 
+		'--file=Build\\Build.lua', 
+		f'--vk_version={VulkanRequirements.SDK_Version}' 
+	] + sys.argv[ 1: ]
 
 	if platform.system( ) == 'Windows' :
 		premake_call.insert( 0, 'Build\\Premake\\Windows\\premake5.exe' )
@@ -65,7 +63,7 @@ def call_premake( ) :
 
 # --- MAIN LOGIC
 if __name__ == "__main__" :
-	print( '=== Setup Micro Vulkan ===' )
+	print( '=== Setup Micro ===' )
 
 	VulkanRequirements.TryValidate( )
 
