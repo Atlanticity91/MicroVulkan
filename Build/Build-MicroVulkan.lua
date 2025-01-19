@@ -5,9 +5,9 @@ project "MicroVulkan"
 	location "%{OutputDirs.Solution}"
 
 	--- OUTPUT
-	targetdir "%{OutputDirs.Bin}/%{cfg.buildcfg}/"
-	debugdir "%{OutputDirs.Bin}/%{cfg.buildcfg}/"
-	objdir "%{OutputDirs.BinInt}/%{prj.name}-%{cfg.buildcfg}"
+	targetdir "%{OutputDirs.Bin}%{cfg.buildcfg}/"
+	debugdir "%{OutputDirs.Bin}%{cfg.buildcfg}/"
+	objdir "%{OutputDirs.BinInt}%{prj.name}-%{cfg.buildcfg}"
 
 	--- GLOBAL INCLUDES
 	includedirs {
@@ -33,7 +33,7 @@ project "MicroVulkan"
 	filter "system:linux"
 		systemversion "latest"
 
-		--- DEFINES
+		--- LINUX SPECIFIC DEFINES
 		defines { "LINUX" }
 
 	-- WINDOWS
@@ -42,7 +42,7 @@ project "MicroVulkan"
 		cppdialect "C++20"
 		flags "MultiProcessorCompile"
 		
-		--- DEFINES
+		--- WINDOWS SPECIFIC DEFINES
 		defines { 
 			"WINDOWS",
 			"_CRT_SECURE_NO_WARNINGS"
