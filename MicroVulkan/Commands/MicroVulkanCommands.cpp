@@ -7,7 +7,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2024 Alves Quentin
+ * Copyright (c) 2024- Alves Quentin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,7 +29,7 @@
  *
  **/
 
-#include <__micro_vulkan_pch.h>
+#include "__micro_vulkan_pch.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC ===
@@ -43,23 +43,21 @@ bool MicroVulkanCommands::Create(
 	const MicroVulkanQueues& queues,
 	const MicroVulkanSwapchain& swapchain
 ) {
-	auto state = true;
+	auto state = false;
 	auto type  = (uint32_t)vk::QUEUE_TYPE_GRAPHICS;
 
 	while ( state && type < vk::QUEUE_TYPE_COUNT ) {
 		auto pool_spec = CreateCommandPoolSpec( queues, swapchain, (vk::QueueTypes)type );
 		auto pool	   = MicroVulkanCommandPool{ };
 
-		if ( CreateCommandPool( device, pool_spec, pool ) ) {
+		if ( state = CreateCommandPool( device, pool_spec, pool ) ) {
 			if ( CreateCommandBuffers( device, VK_COMMAND_BUFFER_LEVEL_PRIMARY, 0, pool_spec.PrimayCount, pool ) ) {
 				if ( pool_spec.SecondaryCount > 0 )
-					CreateCommandBuffers( device, VK_COMMAND_BUFFER_LEVEL_SECONDARY, pool_spec.PrimayCount, pool_spec.SecondaryCount, pool );
-			} else
-				state = false;
+					state = CreateCommandBuffers( device, VK_COMMAND_BUFFER_LEVEL_SECONDARY, pool_spec.PrimayCount, pool_spec.SecondaryCount, pool );
+			}
 
 			m_pools.emplace( (vk::QueueTypes)type, pool );
-		} else
-			state = false;
+		}
 
 		type += 1;
 	}
@@ -109,15 +107,20 @@ void MicroVulkanCommands::Destroy( const MicroVulkanDevice& device ) {
 		auto& pool = pair.second;
 
 		if ( vk::IsValid( pool.Pool ) ) {
-			auto buffer_list = EnumerateCommandBuffer( pool );
+			auto buffer_list  = EnumerateCommandBuffer( pool );
+			auto buffer_count = (uint32_t)buffer_list.size( );
+			auto* buffer_data = buffer_list.data( );
 
-			vkFreeCommandBuffers( device, pool, (uint32_t)buffer_list.size( ), buffer_list.data( ) );
+			vkFreeCommandBuffers( device, pool, buffer_count, buffer_data );
 		}
 
 		vk::DestroyCommandPool( device, pool );
 	}
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////
+//		===	PRIVATE ===
+////////////////////////////////////////////////////////////////////////////////////////////
 MicroVulkanCommandPoolSpecification MicroVulkanCommands::CreateCommandPoolSpec(
 	const MicroVulkanQueues& queues,
 	const MicroVulkanSwapchain& swapchain,
@@ -201,7 +204,8 @@ bool MicroVulkanCommands::CreateCommandBuffers(
 ) {
 	auto specification = CreateCommandBuffersSpec( pool, level, count );
 	auto buffer_list   = std::vector<VkCommandBuffer>( (size_t)count );
-	auto result		   = vkAllocateCommandBuffers( device, &specification, buffer_list.data( ) );
+	auto* buffer_data  = buffer_list.data( );
+	auto result		   = vkAllocateCommandBuffers( device, micro_ptr( specification ), buffer_data );
 
 	if ( result == VK_SUCCESS )
 		CreateCommandBufferList( level, buffer_list, offset, pool );
@@ -209,6 +213,9 @@ bool MicroVulkanCommands::CreateCommandBuffers(
 	return result == VK_SUCCESS;
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////
+//		===	PRIVATE GET ===
+////////////////////////////////////////////////////////////////////////////////////////////
 std::vector<VkCommandBuffer> MicroVulkanCommands::EnumerateCommandBuffer(
 	const MicroVulkanCommandPool& pool
 ) {

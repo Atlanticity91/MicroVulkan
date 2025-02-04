@@ -7,7 +7,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2024 Alves Quentin
+ * Copyright (c) 2024- Alves Quentin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -33,7 +33,7 @@
 
 #include "../Swapchains/MicroVulkanSwapchain.h"
 
-class MicroVulkanRenderPasses final { 
+micro_class MicroVulkanRenderPasses final { 
 
 private:
 	std::vector<VkRenderPass> m_passes;

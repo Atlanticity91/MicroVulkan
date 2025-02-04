@@ -7,7 +7,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2024 Alves Quentin
+ * Copyright (c) 2024- Alves Quentin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -31,9 +31,9 @@
 
 #pragma once
 
-#include "MicroVulkanPipelines.h"
+#include "../Pipelines/MicroVulkanPipelines.h"
 
-struct MicroVulkanRenderContext {
+micro_struct MicroVulkanRenderContext {
 
 	uint32_t FrameID;
 	uint32_t ImageID;

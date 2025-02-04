@@ -7,7 +7,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2024 Alves Quentin
+ * Copyright (c) 2024- Alves Quentin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -31,7 +31,7 @@
 
 #pragma once
 
-#include "../Utils/MicroVulkanSpecification.h"
+#include "../Utils/MicroVulkanWindow.h"
 
 micro_class MicroVulkanInstance final {
 
@@ -46,7 +46,7 @@ public:
 	~MicroVulkanInstance( ) = default;
 
 	bool Create( 
-		const MicroWindow& window,
+		const MicroVulkanWindow& window,
 		const MicroVulkanSpecification& specification
 	);
 
@@ -57,7 +57,7 @@ private:
 
 	bool CreateDebugMessenger( );
 
-	bool CreateSurface( const MicroWindow& window );
+	bool CreateSurface( const MicroVulkanWindow& window );
 
 private:
 	static VKAPI_ATTR VkBool32 VKAPI_CALL DebugCallback(

@@ -7,7 +7,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2024 Alves Quentin
+ * Copyright (c) 2024- Alves Quentin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,7 +29,7 @@
  *
  **/
 
-#include <__micro_vulkan_pch.h>
+#include "__micro_vulkan_pch.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC ===
@@ -62,7 +62,7 @@ bool MicroVulkanSynchronization::Create(
 MicroVulkanSync* MicroVulkanSynchronization::Acquire( const uint32_t frame_id ) {
 	micro_assert( frame_id < m_syncs.size( ), "Frame Index must be in range [ 0 : %u ]", m_syncs.size( ) );
 
-	return &m_syncs[ frame_id ];
+	return micro_ptr( m_syncs[ frame_id ] );
 }
 
 void MicroVulkanSynchronization::Destroy( const MicroVulkanDevice& device ) {

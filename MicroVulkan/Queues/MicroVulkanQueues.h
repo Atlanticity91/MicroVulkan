@@ -7,7 +7,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2024 Alves Quentin
+ * Copyright (c) 2024- Alves Quentin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -31,38 +31,7 @@
 
 #pragma once
 
-#include "MicroVulkanDevice.h"
-
-micro_struct MicroVulkanQueue {
-
-	VkBool32 InUse = VK_FALSE;
-	VkQueue Queue  = VK_NULL_HANDLE;
-
-	operator const VkQueue& ( ) const {
-		return Queue;
-	};
-
-};
-
-micro_struct MicroVulkanQueueHandle {
-
-	vk::QueueTypes Type = vk::QUEUE_TYPE_COUNT;
-	uint32_t QueueID	= UINT32_MAX;
-	VkQueue Queue		= VK_NULL_HANDLE;
-
-	bool GetIsValid( ) const {
-		return QueueID < UINT32_MAX && vk::IsValid( Queue );
-	};
-
-	operator bool ( ) const {
-		return GetIsValid( );
-	};
-
-	operator VkQueue ( ) const {
-		return Queue;
-	};
-
-};
+#include "MicroVulkanQueueHandle.h"
 
 micro_class MicroVulkanQueues final { 
 

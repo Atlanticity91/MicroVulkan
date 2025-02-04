@@ -7,7 +7,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2024 Alves Quentin
+ * Copyright (c) 2024- Alves Quentin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -31,17 +31,9 @@
 
 #pragma once
 
-#include "../Rendering/MicroVulkanRenderPasses.h"
+#include "MicroVulkanSync.h"
 
-struct MicroVulkanSync {
-	
-	VkSemaphore Renderable  = VK_NULL_HANDLE;
-	VkSemaphore Presentable = VK_NULL_HANDLE;
-	VkFence Signal			= VK_NULL_HANDLE;
-
-};
-
-class MicroVulkanSynchronization final {
+micro_class MicroVulkanSynchronization final {
 
 private:
 	std::vector<MicroVulkanSync> m_syncs;

@@ -7,7 +7,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2024 Alves Quentin
+ * Copyright (c) 2024- Alves Quentin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -31,76 +31,9 @@
 
 #pragma once
 
-#include "../Ressources/MicroVulkanTexture.h"
+#include "MicroVulkanRenderPassInfo.h"
 
-micro_struct MicroVulkanFrameTargetTexture {
-
-	MicroVulkanTexture Texture{ };
-	VkFormat Format = VK_FORMAT_UNDEFINED;
-
-	bool Create( const MicroVulkanSwapchainImage& swapchain_image ) {
-		return Texture.Create( swapchain_image );
-	};
-
-	bool Create(
-		const MicroVulkanDevice& device,
-		const MicroVulkanQueues& queues,
-		const MicroVulkanTextureSpecification& specification
-	) {
-		Format = specification.Properties.Format;
-
-		return Texture.Create( device, queues, specification );
-	};
-
-	void Destroy( const MicroVulkanDevice& device ) {
-		Texture.Destroy( device );
-	};
-
-	VkImageView GetView( ) const {
-		return Texture.GetView( );
-	};
-
-};
-
-micro_struct MicroVulkanFrameTarget {
-
-	VkFramebuffer Framebuffer = VK_NULL_HANDLE;
-	std::vector<MicroVulkanFrameTargetTexture> Textures{ };
-
-	operator VkFramebuffer ( ) const {
-		return Framebuffer;
-	};
-
-};
-
-micro_struct MicroVulkanFramebuffer {
-
-	micro_upoint Dimensions{ 0, 0 };
-	std::vector<VkClearValue> Clears{ };
-	std::vector<MicroVulkanFrameTarget> Targets{ };
-
-};
-
-micro_struct MicroVulkanRenderPassInfo {
-
-	VkRenderPassBeginInfo BeginInfo;
-	VkViewport Viewport;
-	VkRect2D Scissor;
-
-	MicroVulkanRenderPassInfo( ) 
-		: BeginInfo{ },
-		Viewport{ },
-		Scissor{ }
-	{ };
-
-	MicroVulkanRenderPassInfo( MicroVulkanRenderPassInfo&& other ) 
-	{ 
-		memcpy_s( this, sizeof( MicroVulkanRenderPassInfo ), &other, sizeof( MicroVulkanRenderPassInfo ) );
-	};
-
-};
-
-class MicroVulkanFramebuffers final {
+micro_class MicroVulkanFramebuffers final {
 
 private:
 	MicroVulkanDimensionsPolicy m_dimensions_policy;
@@ -112,7 +45,7 @@ public:
 	~MicroVulkanFramebuffers( ) = default;
 
 	bool Create(
-		const MicroWindow& window,
+		const MicroVulkanWindow& window,
 		const MicroVulkanDevice& device,
 		const MicroVulkanQueues& queues,
 		const MicroVulkanSwapchain& swapchain,
@@ -148,7 +81,7 @@ public:
 	void Destroy( const MicroVulkanDevice& device );
 
 private:
-	micro_upoint CreateDimensionsSpec( const MicroWindow& window );
+	micro_upoint CreateDimensionsSpec( const MicroVulkanWindow& window );
 
 	micro_upoint CreateDimensionsSpec( const micro_upoint& dimensions );
 
@@ -248,6 +181,8 @@ private:
 
 	VkImageUsageFlags GetTextureUsage( const VkFormat format ) const;
 
-	void GetRenderFramebuffersSpec( const MicroVulkanSpecification& specification );
+	void GetRenderFramebuffersSpec( 
+		const MicroVulkanSpecification& specification
+	);
 
 };

@@ -7,7 +7,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2024 Alves Quentin
+ * Copyright (c) 2024- Alves Quentin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -31,6 +31,11 @@
 
 #pragma once 
 
-#include <MicroCore/MicroCore.h>
+#ifdef MICRO_USE_CORE
+#	include <MicroCore/MicroCore.h>
+#else
+#	include "MicroTraits.h"
+#endif
+
 #include <vulkan/vulkan.h>
 #include <spirv-headers/spirv.hpp>

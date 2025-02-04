@@ -7,7 +7,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2024 Alves Quentin
+ * Copyright (c) 2024- Alves Quentin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,7 +29,7 @@
  *
  **/
 
-#include <__micro_vulkan_pch.h>
+#include "__micro_vulkan_pch.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC ===
@@ -42,7 +42,7 @@ MicroVulkanQueues::MicroVulkanQueues( )
 void MicroVulkanQueues::Create( const MicroVulkanDevice& device ) {
 	auto& device_spec = device.GetSpecification( );
 	auto queue_idx    = vk::QUEUE_TYPE_GRAPHICS;
-	auto* queues	  = (const uint32_t*)device_spec.Queues;
+	auto* queues	  = micro_cast( device_spec.Queues, const uint32_t* );
 
 	while ( queue_idx < vk::QUEUE_TYPE_COUNT ) {
 		auto queue_id   = 2 * (uint32_t)queue_idx;
@@ -91,6 +91,9 @@ void MicroVulkanQueues::Release( MicroVulkanQueueHandle& handle ) {
 void MicroVulkanQueues::Destroy( ) {
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////
+//		===	PRIVATE ===
+////////////////////////////////////////////////////////////////////////////////////////////
 MicroVulkanQueues::QueueList MicroVulkanQueues::CreateQueues(
 	const MicroVulkanDevice& device,
 	const vk::QueueTypes type,
@@ -102,12 +105,15 @@ MicroVulkanQueues::QueueList MicroVulkanQueues::CreateQueues(
 	while ( count-- > 0 ) {
 		queues[ count ].InUse = VK_FALSE;
 
-		vkGetDeviceQueue( device, family, count, &queues[ count ].Queue );
+		vkGetDeviceQueue( device, family, count, micro_ptr( queues[ count ].Queue ) );
 	}
 
 	return queues;
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////
+//		===	PUBLIC GET ===
+////////////////////////////////////////////////////////////////////////////////////////////
 const MicroVulkanQueue& MicroVulkanQueues::Get( const vk::QueueTypes type ) const {
 	return m_queues[ type ][ 0 ];
 }

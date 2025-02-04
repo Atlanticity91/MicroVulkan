@@ -1,13 +1,13 @@
 /**
  *
- *  __  __ _          __   __    _ _             
+ *  __  __ _          __   __    _ _
  * |  \/  (_)__ _ _ __\ \ / /  _| | |____ _ _ _  
  * | |\/| | / _| '_/ _ \ V / || | | / / _` | ' \ 
- * |_|  |_|_\__|_| \___/\_/ \_,_|_|_\_\__,_|_||_|                                              
+ * |_|  |_|_\__|_| \___/\_/ \_,_|_|_\_\__,_|_||_|
  *
  * MIT License
  *
- * Copyright (c) 2024 Alves Quentin
+ * Copyright (c) 2024- Alves Quentin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal

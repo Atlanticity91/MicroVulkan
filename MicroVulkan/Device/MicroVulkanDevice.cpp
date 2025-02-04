@@ -7,7 +7,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2024 Alves Quentin
+ * Copyright (c) 2024- Alves Quentin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,7 +29,7 @@
  *
  **/
 
-#include <__micro_vulkan_pch.h>
+#include "__micro_vulkan_pch.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC ===
@@ -56,7 +56,7 @@ VkMemoryAllocateInfo MicroVulkanDevice::CreateImageAllocationSpec(
     auto allocation_spec = VkMemoryAllocateInfo{ };
     auto requirements    = VkMemoryRequirements{ };
 
-    vkGetImageMemoryRequirements( m_device, image, &requirements );
+    vkGetImageMemoryRequirements( m_device, image, micro_ptr( requirements ) );
 
     allocation_spec.sType           = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
     allocation_spec.pNext           = VK_NULL_HANDLE;
@@ -73,7 +73,7 @@ VkMemoryAllocateInfo MicroVulkanDevice::CreateBufferAllocationSpec(
     auto allocation_spec = VkMemoryAllocateInfo{ };
     auto requirements    = VkMemoryRequirements{ };
 
-    vkGetBufferMemoryRequirements( m_device, buffer, &requirements );
+    vkGetBufferMemoryRequirements( m_device, buffer, micro_ptr( requirements ) );
 
     allocation_spec.sType           = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
     allocation_spec.pNext           = VK_NULL_HANDLE;
@@ -91,8 +91,12 @@ void MicroVulkanDevice::Destroy( ) {
 	vk::DestroyDevice( m_device );
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////
+//		===	PRIVATE ===
+////////////////////////////////////////////////////////////////////////////////////////////
 void MicroVulkanDevice::PreSelectPhysical( std::vector<VkPhysicalDevice>& physical_list ) {
     auto properties = VkPhysicalDeviceProperties{ };
+    auto list_first = physical_list.begin( );
     auto list_size  = physical_list.size( );
 
     while ( list_size-- > 0 ) {
@@ -101,7 +105,7 @@ void MicroVulkanDevice::PreSelectPhysical( std::vector<VkPhysicalDevice>& physic
         vkGetPhysicalDeviceProperties( physical, &properties );
 
         if ( properties.deviceType < 1 || properties.deviceType > 2 )
-            physical_list.erase( physical_list.begin( ) + list_size );
+            physical_list.erase( list_first + list_size );
     }
 }
 
@@ -155,7 +159,7 @@ void MicroVulkanDevice::SelectPhysical(
     if ( vk::IsValid( m_physical ) ) {
         vk::GetPhysicalSpecification( m_physical, surface, m_specification );
 
-        vkGetPhysicalDeviceMemoryProperties( m_physical, &m_memory );
+        vkGetPhysicalDeviceMemoryProperties( m_physical, micro_ptr( m_memory ) );
     }
 }
 
@@ -178,7 +182,7 @@ std::vector<VkDeviceQueueCreateInfo> MicroVulkanDevice::CreatePhysicalQueues(
 ) {
     auto create_info = VkDeviceQueueCreateInfo{ };
     auto queue_list  = std::vector<VkDeviceQueueCreateInfo>{ };
-    auto* queues     = (const uint32_t*)m_specification.Queues;
+    auto* queues     = micro_cast( m_specification.Queues, const uint32_t* );
     
     for ( auto queue_idx = 0; queue_idx < vk::QUEUE_TYPE_COUNT; queue_idx++ ) {
         auto queue_id = 2 * queue_idx;
@@ -215,6 +219,9 @@ bool MicroVulkanDevice::CreateDevice( const MicroVulkanSpecification& specificat
 	return vk::CreateDevice( m_physical, create_info, m_device ) == VK_SUCCESS;
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////
+//		===	PUBLIC GET ===
+////////////////////////////////////////////////////////////////////////////////////////////
 const vk::DeviceSpecification& MicroVulkanDevice::GetSpecification( ) const {
     return m_specification;
 }
@@ -235,7 +242,7 @@ uint32_t MicroVulkanDevice::GetPeekMemoryType(
 
     while ( memory_type_id < m_memory.memoryTypeCount ) {
         if ( 
-            requirement_bits & 1 && 
+            ( requirement_bits & 1 ) && 
             ( m_memory.memoryTypes[ memory_type_id ].propertyFlags & properties ) == properties 
         )
             break;
@@ -250,6 +257,9 @@ uint32_t MicroVulkanDevice::GetPeekMemoryType(
     return memory_type_id;
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////
+//		===	PRIVATE GET ===
+////////////////////////////////////////////////////////////////////////////////////////////
 bool MicroVulkanDevice::GetPhysicalHasExtensions(
     const MicroVulkanSpecification& specification,
     const VkPhysicalDevice& physical
@@ -288,18 +298,18 @@ bool MicroVulkanDevice::GetPhysicalHasDepth(
     auto has_depth  = false;
 
     for ( auto& depth_format : specification.Depths ) {
-        vkGetPhysicalDeviceFormatProperties( physical, depth_format, &properties );
+        vkGetPhysicalDeviceFormatProperties( physical, depth_format, micro_ptr( properties ) );
 
-        has_depth = properties.optimalTilingFeatures & VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT;
-
-        if ( has_depth ) 
+        if ( has_depth = ( properties.optimalTilingFeatures & VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT ) )
             break;
     }
 
     return has_depth;
 }
 
-uint32_t MicroVulkanDevice::GetPhysicalQueueScore( const vk::DeviceSpecification& physical_spec ) {
+uint32_t MicroVulkanDevice::GetPhysicalQueueScore( 
+    const vk::DeviceSpecification& physical_spec 
+) {
     auto& queues = physical_spec.Queues;
     auto score   = (uint32_t)0;
 
@@ -317,6 +327,9 @@ uint32_t MicroVulkanDevice::GetPhysicalQueueScore( const vk::DeviceSpecification
     return score;
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////
+//		===	OPERATOR ===
+////////////////////////////////////////////////////////////////////////////////////////////
 MicroVulkanDevice::operator VkDevice ( ) const {
 	return GetDevice( );
 }

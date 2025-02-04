@@ -7,7 +7,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2024 Alves Quentin
+ * Copyright (c) 2024- Alves Quentin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,7 +29,7 @@
  *
  **/
 
-#include <__micro_vulkan_pch.h>
+#include "__micro_vulkan_pch.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC ===
@@ -41,7 +41,7 @@ MicroVulkanSwapchain::MicroVulkanSwapchain( )
 { }
 
 bool MicroVulkanSwapchain::Create( 
-	const MicroWindow& window,
+	const MicroVulkanWindow& window,
     const MicroVulkanInstance& instance,
 	const MicroVulkanDevice& device 
 ) {
@@ -164,7 +164,7 @@ VkSwapchainCreateInfoKHR MicroVulkanSwapchain::CreateSwapchainSpec(
 }
 
 bool MicroVulkanSwapchain::CreateSwapchain(
-    const MicroWindow& window,
+    const MicroVulkanWindow& window,
     const MicroVulkanInstance& instance,
     const MicroVulkanDevice& device
 ) {
@@ -239,7 +239,7 @@ VkSurfaceCapabilitiesKHR MicroVulkanSwapchain::GetSurfaceSpec(
     auto physical     = device.GetPhysical( );
     auto surface      = instance.GetSurface( );
 
-    vkGetPhysicalDeviceSurfaceCapabilitiesKHR( physical, surface, &surface_spec );
+    vkGetPhysicalDeviceSurfaceCapabilitiesKHR( physical, surface, micro_ptr( surface_spec ) );
 
     return surface_spec;
 }
@@ -298,5 +298,5 @@ MicroVulkanSwapchain::operator VkSwapchainKHR ( ) const {
 }
 
 MicroVulkanSwapchain::operator VkSwapchainKHR* ( ) const {
-    return (VkSwapchainKHR*)&m_swapchain;
+    return micro_ptr_as( m_swapchain, VkSwapchainKHR* );
 }

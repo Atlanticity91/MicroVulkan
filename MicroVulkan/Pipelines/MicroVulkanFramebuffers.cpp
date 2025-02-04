@@ -7,7 +7,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2024 Alves Quentin
+ * Copyright (c) 2024- Alves Quentin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,7 +29,7 @@
  *
  **/
 
-#include <__micro_vulkan_pch.h>
+#include "__micro_vulkan_pch.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC ===
@@ -40,7 +40,7 @@ MicroVulkanFramebuffers::MicroVulkanFramebuffers( )
 { }
 
 bool MicroVulkanFramebuffers::Create(
-    const MicroWindow& window,
+    const MicroVulkanWindow& window,
 	const MicroVulkanDevice& device,
     const MicroVulkanQueues& queues,
     const MicroVulkanSwapchain& swapchain,
@@ -123,7 +123,7 @@ MicroVulkanRenderPassInfo MicroVulkanFramebuffers::CreateRenderPassInfo(
         { dimensions.x, dimensions.y }
     };
 
-    return std::move( render_pass_info );
+    return render_pass_info;
 }
 
 void MicroVulkanFramebuffers::Destroy( const MicroVulkanDevice& device ) {
@@ -137,13 +137,17 @@ void MicroVulkanFramebuffers::Destroy( const MicroVulkanDevice& device ) {
     }
 }
 
-micro_upoint MicroVulkanFramebuffers::CreateDimensionsSpec( const MicroWindow& window ) {
+micro_upoint MicroVulkanFramebuffers::CreateDimensionsSpec( 
+    const MicroVulkanWindow& window
+) {
     auto dimensions_spec = window.GetDimensions( );
 
     return CreateDimensionsSpec( dimensions_spec );
 }
 
-micro_upoint MicroVulkanFramebuffers::CreateDimensionsSpec( const micro_upoint& dimensions ) {
+micro_upoint MicroVulkanFramebuffers::CreateDimensionsSpec( 
+    const micro_upoint& dimensions 
+) {
     m_dimensions_policy.Ratio;
     m_dimensions_policy.Scale;
 
@@ -232,7 +236,7 @@ bool MicroVulkanFramebuffers::CreateFramebufferTextures(
     MicroVulkanFrameTarget& target
 ) {
     auto texture_id = attachements_spec.size( );
-    auto result = true;
+    auto result     = true;
 
     target.Textures.resize( texture_id );
 
@@ -274,7 +278,7 @@ std::vector<VkImageView> MicroVulkanFramebuffers::CreateFramebufferAttachements(
     while ( attachement_id-- > 0 )
         attachements[ attachement_id ] = target.Textures[ attachement_id ].GetView( );
 
-    return std::move( attachements );
+    return attachements;
 }
 
 VkFramebufferCreateInfo MicroVulkanFramebuffers::CreateFramebufferSpec(

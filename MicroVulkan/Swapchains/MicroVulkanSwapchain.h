@@ -7,7 +7,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2024 Alves Quentin
+ * Copyright (c) 2024- Alves Quentin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -31,25 +31,9 @@
 
 #pragma once
 
-#include "../Device/MicroVulkanQueues.h"
+#include "MicroVulkanSwapchainImage.h"
 
-struct MicroVulkanSwapchainSpecification {
-
-	uint32_t ImageCount = 0;
-	VkFormat Format = VK_FORMAT_UNDEFINED;
-	VkColorSpaceKHR ColorSpace = VK_COLOR_SPACE_SRGB_NONLINEAR_KHR;
-	VkPresentModeKHR PresentMode = VK_PRESENT_MODE_IMMEDIATE_KHR;
-
-};
-
-struct MicroVulkanSwapchainImage {
-
-	VkImage Image    = VK_NULL_HANDLE;
-	VkImageView View = VK_NULL_HANDLE;
-
-};
-
-class MicroVulkanSwapchain final {
+micro_class MicroVulkanSwapchain final {
 
 private:
 	MicroVulkanSwapchainSpecification m_specification;
@@ -62,7 +46,7 @@ public:
 	~MicroVulkanSwapchain( ) = default;
 
 	bool Create(
-		const MicroWindow& window,
+		const MicroVulkanWindow& window,
 		const MicroVulkanInstance& instance,
 		const MicroVulkanDevice& device
 	);
@@ -107,7 +91,7 @@ private:
 	);
 
 	bool CreateSwapchain( 
-		const MicroWindow& window,
+		const MicroVulkanWindow& window,
 		const MicroVulkanInstance& instance,
 		const MicroVulkanDevice& device
 	);
@@ -139,7 +123,9 @@ private:
 		VkSwapchainCreateInfoKHR& specification
 	);
 
-	void GetSwapchainSpecification( const VkSwapchainCreateInfoKHR& swapchain_info );
+	void GetSwapchainSpecification( 
+		const VkSwapchainCreateInfoKHR& swapchain_info 
+	);
 
 public:
 	operator VkSwapchainKHR ( ) const;

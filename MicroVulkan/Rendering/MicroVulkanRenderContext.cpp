@@ -7,7 +7,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2024 Alves Quentin
+ * Copyright (c) 2024- Alves Quentin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,7 +29,7 @@
  *
  **/
 
-#include <__micro_vulkan_pch.h>
+#include "__micro_vulkan_pch.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC ===
@@ -55,7 +55,7 @@ VkResult MicroVulkanRenderContext::CmdBeginRecord( ) {
 
 		vkResetCommandBuffer( CommandBuffer, VK_UNUSED_FLAG );
 
-		result = vkBeginCommandBuffer( CommandBuffer, &specification );
+		result = vkBeginCommandBuffer( CommandBuffer, micro_ptr( specification ) );
 	}
 
 	return result;
@@ -74,7 +74,7 @@ bool MicroVulkanRenderContext::CmdBeginRenderPass(
 	auto state = vk::IsValid( render_pass_info.renderPass ) && vk::IsValid( render_pass_info.framebuffer );
 
 	if ( state && CommandBuffer.GetIsValid( ) )
-		vkCmdBeginRenderPass( CommandBuffer, &render_pass_info, command_policy );
+		vkCmdBeginRenderPass( CommandBuffer, micro_ptr( render_pass_info ), command_policy );
 
 	return state;
 }
@@ -88,8 +88,11 @@ void MicroVulkanRenderContext::CmdExecute(
 ) {
 	auto command_count = (uint32_t)secondary_commands.size( );
 
-	if ( command_count > 0 && CommandBuffer.GetIsValid( ) )
-		vkCmdExecuteCommands( CommandBuffer, command_count, secondary_commands.data( ) );
+	if ( command_count > 0 && CommandBuffer.GetIsValid( ) ) {
+		const auto* buffer_data = secondary_commands.data( );
+
+		vkCmdExecuteCommands( CommandBuffer, command_count, buffer_data );
+	}
 }
 
 void MicroVulkanRenderContext::CmdNextSubpass(
@@ -142,14 +145,14 @@ VkResult MicroVulkanRenderContext::Submit(
 		specification.sType				   = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 		specification.pNext				   = VK_NULL_HANDLE;
 		specification.waitSemaphoreCount   = 1;
-		specification.pWaitSemaphores	   = &Sync->Presentable;
+		specification.pWaitSemaphores	   = micro_ptr( Sync->Presentable );
 		specification.pWaitDstStageMask    = stage_list.data( );
 		specification.commandBufferCount   = 1;
-		specification.pCommandBuffers	   = &CommandBuffer.Buffer;
+		specification.pCommandBuffers	   = micro_ptr( CommandBuffer.Buffer );
 		specification.signalSemaphoreCount = 1;
-		specification.pSignalSemaphores	   = &Sync->Renderable;
+		specification.pSignalSemaphores	   = micro_ptr( Sync->Renderable );
 
-		result = vkQueueSubmit( Queue, 1, &specification, Sync->Signal );
+		result = vkQueueSubmit( Queue, 1, micro_ptr( specification ), Sync->Signal );
 
 		vk::WaitForFences( device, Sync->Signal, UINT32_MAX );
 	}

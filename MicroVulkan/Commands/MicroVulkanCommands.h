@@ -7,7 +7,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2024 Alves Quentin
+ * Copyright (c) 2024- Alves Quentin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -31,59 +31,7 @@
 
 #pragma once
 
-#include "../Ressources/MicroVulkanStagings.h"
-
-struct MicroVulkanCommandBuffer {
-
-	VkBool32 InUse			   = VK_FALSE;
-	VkCommandBufferLevel Level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-	VkCommandBuffer Buffer	   = VK_NULL_HANDLE;
-
-	operator VkCommandBuffer ( ) {
-		return Buffer;
-	};
-
-};
-
-struct MicroVulkanCommandPoolSpecification {
-
-	uint32_t QueueFamily    = 0;
-	uint32_t PrimayCount    = 0;
-	uint32_t SecondaryCount = 0;
-
-};
-
-struct MicroVulkanCommandPool {
-
-	VkCommandPool Pool = VK_NULL_HANDLE;
-	std::vector<MicroVulkanCommandBuffer> Buffers{ };
-
-	operator VkCommandPool& ( ) {
-		return Pool;
-	};
-
-};
-
-struct MicroVulkanCommandHandle {
-
-	vk::QueueTypes Type			   = vk::QUEUE_TYPE_COUNT;
-	uint32_t BufferID			   = UINT32_MAX;
-	VkCommandBufferLevel Level	   = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-	mutable VkCommandBuffer Buffer = VK_NULL_HANDLE;
-
-	bool GetIsValid( ) const {
-		return BufferID < UINT32_MAX && vk::IsValid( Buffer );
-	};
-
-	operator bool ( ) const {
-		return GetIsValid( );
-	};
-
-	operator VkCommandBuffer& ( ) const {
-		return Buffer;
-	};
-
-};
+#include "MicroVulkanCommandHandle.h"
 
 micro_class MicroVulkanCommands final { 
 

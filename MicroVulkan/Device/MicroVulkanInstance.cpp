@@ -7,7 +7,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2024 Alves Quentin
+ * Copyright (c) 2024- Alves Quentin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,7 +29,7 @@
  *
  **/
 
-#include <__micro_vulkan_pch.h>
+#include "__micro_vulkan_pch.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC ===
@@ -41,7 +41,7 @@ MicroVulkanInstance::MicroVulkanInstance( )
 { }
 
 bool MicroVulkanInstance::Create( 
-    const MicroWindow& window,
+    const MicroVulkanWindow& window,
     const MicroVulkanSpecification& specification
 ) {
     return  CreateInstance( specification ) &&
@@ -55,13 +55,16 @@ void MicroVulkanInstance::Destroy( ) {
     vk::DestroyInstance( m_instance );
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////
+//		===	PRIVATE ===
+////////////////////////////////////////////////////////////////////////////////////////////
 bool MicroVulkanInstance::CreateInstance( const MicroVulkanSpecification& specification ) {
     auto create_info = VkInstanceCreateInfo{ };
 
     create_info.sType                   = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
     create_info.pNext                   = VK_NULL_HANDLE;
     create_info.flags                   = VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
-    create_info.pApplicationInfo        = &specification.Application;
+    create_info.pApplicationInfo        = micro_ptr (specification.Application );
     create_info.enabledLayerCount       = (uint32_t)specification.Validations.size( );
     create_info.ppEnabledLayerNames     = specification.Validations.data( );
     create_info.enabledExtensionCount   = (uint32_t)specification.InstanceExtensions.size( );
@@ -88,10 +91,13 @@ bool MicroVulkanInstance::CreateDebugMessenger( ) {
 #   endif
 }
 
-bool MicroVulkanInstance::CreateSurface( const MicroWindow& window ) {
-    return SDL_Vulkan_CreateSurface( window, m_instance, &m_surface ) == SDL_TRUE;
+bool MicroVulkanInstance::CreateSurface( const MicroVulkanWindow& window ) {
+    return window.CreateSurface( m_instance, m_surface );
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////
+//		===	PRIVATE STATIC ===
+////////////////////////////////////////////////////////////////////////////////////////////
 VkBool32 MicroVulkanInstance::DebugCallback(
     VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
     VkDebugUtilsMessageTypeFlagsEXT messageType,
@@ -141,6 +147,9 @@ VkBool32 MicroVulkanInstance::DebugCallback(
     return VK_FALSE;
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////
+//		===	PUBLIC GET ===
+////////////////////////////////////////////////////////////////////////////////////////////
 VkInstance MicroVulkanInstance::GetInstance( ) const {
     return m_instance;
 }
@@ -149,6 +158,9 @@ VkSurfaceKHR MicroVulkanInstance::GetSurface( ) const {
     return m_surface;
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////
+//		===	OPERATOR ===
+////////////////////////////////////////////////////////////////////////////////////////////
 MicroVulkanInstance::operator VkInstance ( ) const {
     return GetInstance( );
 }

@@ -7,7 +7,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2024 Alves Quentin
+ * Copyright (c) 2024- Alves Quentin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,7 +29,7 @@
  *
  **/
 
-#include <__micro_vulkan_pch.h>
+#include "__micro_vulkan_pch.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	INTERNAL ===
@@ -184,9 +184,9 @@ std::vector<uint8_t> MicroVulkanPipelines::LoadCache(
 		auto* path = m_path.c_str( );
 
 #		ifdef _WIN32
-		FILE* file = NULL;
+		auto* file = micro_cast( NULL, FILE* );
 
-		if ( fopen_s( &file, path, "rb" ) == 0 ) {
+		if ( fopen_s( micro_ptr( file ), path, "rb" ) == 0 ) {
 #		else
 		file = fopen( path, "rb" );
 
@@ -194,15 +194,15 @@ std::vector<uint8_t> MicroVulkanPipelines::LoadCache(
 #		endif
 			auto header = MicroVulkanPipelineCacheHeader{ };
 
-			fread( &header.Magic , sizeof( uint32_t ), 1, file );
-			fread( &header.Vendor, sizeof( uint32_t ), 1, file );
-			fread( &header.Device, sizeof( uint32_t ), 1, file );
-			fread( &header.CRC	 , sizeof( uint32_t ), 1, file );
+			fread( micro_ptr( header.Magic  ), sizeof( uint32_t ), 1, file );
+			fread( micro_ptr( header.Vendor ), sizeof( uint32_t ), 1, file );
+			fread( micro_ptr( header.Device ), sizeof( uint32_t ), 1, file );
+			fread( micro_ptr( header.CRC	), sizeof( uint32_t ), 1, file );
 			
 			if ( header.Magic == CACHE_MAGIC ) {
 				auto cache_size = (size_t)0;
 
-				fread( &cache_size, sizeof( size_t ), 1, file );
+				fread( micro_ptr( cache_size ), sizeof( size_t ), 1, file );
 
 				if ( cache_size > 0 ) {
 					cache_data.resize( cache_size );
@@ -220,7 +220,7 @@ std::vector<uint8_t> MicroVulkanPipelines::LoadCache(
 		}
 	}
 
-	return std::move( cache_data ); 
+	return cache_data;
 }
 
 VkPipelineCacheCreateInfo MicroVulkanPipelines::CreateCacheSpec(
@@ -233,7 +233,7 @@ VkPipelineCacheCreateInfo MicroVulkanPipelines::CreateCacheSpec(
 	cache_spec.pNext		   = VK_NULL_HANDLE;
 	cache_spec.flags		   = VK_UNUSED_FLAG;
 	cache_spec.initialDataSize = (uint32_t)cache_data.size( );
-	cache_spec.pInitialData	   = (const void*)cache_data.data( );
+	cache_spec.pInitialData	   = micro_cast( cache_data.data( ), const void* );
 
 	return cache_spec;
 }
@@ -287,9 +287,9 @@ void MicroVulkanPipelines::SaveCache( const MicroVulkanDevice& device ) {
 			auto* path = m_path.c_str( );
 
 #			ifdef _WIN32
-			FILE* file = NULL;
+			auto* file = micro_cast( NULL, FILE* );
 
-			if ( fopen_s( &file, path, "wb" ) == 0 ) {
+			if ( fopen_s( micro_ptr( file ), path, "wb" ) == 0 ) {
 #			else
 			file = fopen( path, "wb" );
 
@@ -298,12 +298,12 @@ void MicroVulkanPipelines::SaveCache( const MicroVulkanDevice& device ) {
 				auto cache_size = cache_data.size( );
 				auto header		= CreateCacheHeader( device, cache_data );
 				
-				fwrite( &header.Magic , sizeof( uint32_t ), 1, file );
-				fwrite( &header.Vendor, sizeof( uint32_t ), 1, file );
-				fwrite( &header.Device, sizeof( uint32_t ), 1, file );
-				fwrite( &header.CRC   , sizeof( uint32_t ), 1, file );
+				fwrite( micro_ptr( header.Magic  ), sizeof( uint32_t ), 1, file );
+				fwrite( micro_ptr( header.Vendor ), sizeof( uint32_t ), 1, file );
+				fwrite( micro_ptr( header.Device ), sizeof( uint32_t ), 1, file );
+				fwrite( micro_ptr( header.CRC	 ), sizeof( uint32_t ), 1, file );
 
-				fwrite( &cache_size, sizeof( size_t ), 1, file );
+				fwrite( micro_ptr( cache_size ), sizeof( size_t ), 1, file );
 				fwrite( cache_data.data( ), sizeof( uint8_t ), cache_size, file );
 
 				fclose( file );

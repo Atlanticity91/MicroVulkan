@@ -7,7 +7,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2024 Alves Quentin
+ * Copyright (c) 2024- Alves Quentin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -31,20 +31,11 @@
 
 #pragma once
 
-#include "MicroVulkanFramebuffers.h"
+#include "MicroVulkanPipelineCacheHeader.h"
 
-micro_struct MicroVulkanPipelineCacheHeader {
+micro_class MicroVulkanPipelines final {
 
-	uint32_t Magic;
-	uint32_t Vendor;
-	uint32_t Device;
-	uint32_t CRC;
-
-};
-
-class MicroVulkanPipelines final {
-
-	const uint32_t CACHE_MAGIC = 0x434B564D;
+	constexpr static uint32_t CACHE_MAGIC = 0x434B564D;
 
 private:
 	std::string m_path;
