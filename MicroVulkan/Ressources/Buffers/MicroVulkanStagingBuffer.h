@@ -1,8 +1,8 @@
 /**
  *
  *  __  __ _          __   __    _ _
- * |  \/  (_)__ _ _ __\ \ / /  _| | |____ _ _ _  
- * | |\/| | / _| '_/ _ \ V / || | | / / _` | ' \ 
+ * |  \/  (_)__ _ _ __\ \ / /  _| | |____ _ _ _
+ * | |\/| | / _| '_/ _ \ V / || | | / / _` | ' \
  * |_|  |_|_\__|_| \___/\_/ \_,_|_|_\_\__,_|_||_|
  *
  * MIT License
@@ -29,19 +29,17 @@
  *
  **/
 
-#include "__micro_vulkan_pch.h"
+#pragma once
 
-////////////////////////////////////////////////////////////////////////////////////////////
-//		===	PUBLIC ===
-////////////////////////////////////////////////////////////////////////////////////////////
-MicroVulkanFrameTarget::MicroVulkanFrameTarget( ) 
-	: Framebuffer{ VK_NULL_HANDLE },
-	Textures{ }
-{ }
+#include "MicroVulkanBuffer.h"
 
-////////////////////////////////////////////////////////////////////////////////////////////
-//		===	OPERATOR ===
-////////////////////////////////////////////////////////////////////////////////////////////
-MicroVulkanFrameTarget::operator VkFramebuffer ( ) const {
-	return Framebuffer;
-}
+micro_struct MicroVulkanStagingBuffer {
+
+	VkBool32 InUse;
+	uint32_t Length;
+	VkFence Sync;
+	MicroVulkanBuffer Buffer;
+
+	MicroVulkanStagingBuffer( );
+
+};
