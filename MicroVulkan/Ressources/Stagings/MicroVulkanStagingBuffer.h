@@ -29,16 +29,17 @@
  *
  **/
 
-#pragma once 
+#pragma once
 
-#include "../Specifications/MicroVulkanSpecification.h"
+#include "../Buffers/MicroVulkanBuffer.h"
 
-micro_struct MicroVulkanWindow {
+micro_struct MicroVulkanStagingBuffer {
 
-	virtual bool CreateSurface( VkInstance& instance, VkSurfaceKHR& surface ) const = 0;
+	VkBool32 InUse;
+	uint32_t Length;
+	VkFence Sync;
+	MicroVulkanBuffer Buffer;
 
-	virtual void GetExtensions( std::vector<micro_string>& extension_list ) const = 0;
-
-	virtual micro_upoint GetDimensions( ) const = 0;
+	MicroVulkanStagingBuffer( );
 
 };

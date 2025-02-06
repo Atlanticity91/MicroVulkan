@@ -35,14 +35,10 @@
 
 micro_struct MicroShaderSpecification {
 
-	VkShaderStageFlagBits Stage = VK_SHADER_STAGE_VERTEX_BIT;
-	std::string Name = "";
-	std::vector<uint32_t> Code{ };
+	VkShaderStageFlagBits Stage;
+	std::string Name;
+	std::vector<uint32_t> Code;
 
-	MicroShaderSpecification( ) 
-		: Stage{ VK_SHADER_STAGE_VERTEX_BIT },
-		Name{ "" },
-		Code{ }
-	{ };
+	MicroShaderSpecification( );
 
 };

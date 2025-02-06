@@ -31,7 +31,7 @@
 
 #pragma once
 
-#include "../Ressources/Buffers/MicroVulkanStagings.h"
+#include "../Ressources/Stagings/MicroVulkanStagings.h"
 
 micro_struct MicroVulkanCommandBuffer {
 

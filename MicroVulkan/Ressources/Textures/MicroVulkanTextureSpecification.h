@@ -29,16 +29,39 @@
  *
  **/
 
-#pragma once 
+#pragma once
 
-#include "../Specifications/MicroVulkanSpecification.h"
+#include "MicroVulkanTextureUsage.h"
 
-micro_struct MicroVulkanWindow {
+micro_struct MicroVulkanTextureSpecification {
 
-	virtual bool CreateSurface( VkInstance& instance, VkSurfaceKHR& surface ) const = 0;
+	MicroTextureProperties Properties;
+	VkImageType Type;
+	VkSampleCountFlagBits Samples;
+	VkImageUsageFlags Usage;
+	VkSamplerCreateInfo Sampler;
+    VkBool32 IsCubemap;
+    VkBool32 UseSampler;
 
-	virtual void GetExtensions( std::vector<micro_string>& extension_list ) const = 0;
+    MicroVulkanTextureSpecification( );
 
-	virtual micro_upoint GetDimensions( ) const = 0;
+    MicroVulkanTextureSpecification( const MicroVulkanTextureSpecification& other );
+
+    MicroVulkanTextureSpecification( const MicroTextureProperties& properties );
+
+    MicroVulkanTextureSpecification(
+        const MicroTextureProperties& properties,
+	    const VkImageType Type,
+	    const MicroVulkanTextureUsage usage
+    );
+
+    MicroVulkanTextureSpecification(
+        const MicroTextureProperties& properties,
+	    const VkImageType Type,
+        const VkBool32 is_cubemap,
+	    const VkSampleCountFlagBits samples,
+	    const MicroVulkanTextureUsage usage,
+	    const VkSamplerCreateInfo sampler
+    );
 
 };

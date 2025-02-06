@@ -29,16 +29,39 @@
  *
  **/
 
-#pragma once 
+#pragma once
 
-#include "../Specifications/MicroVulkanSpecification.h"
+#include "../../Commands/MicroVulkanCommands.h"
 
-micro_struct MicroVulkanWindow {
+micro_struct MicroTextureProperties {
 
-	virtual bool CreateSurface( VkInstance& instance, VkSurfaceKHR& surface ) const = 0;
+	VkFormat Format;
+	VkImageLayout Layout;
+	VkExtent3D Extent;
+	uint32_t MipLevels;
+	uint32_t ArrayLayers;
 
-	virtual void GetExtensions( std::vector<micro_string>& extension_list ) const = 0;
+    MicroTextureProperties( );
 
-	virtual micro_upoint GetDimensions( ) const = 0;
+	MicroTextureProperties( const MicroTextureProperties& other );
+
+	MicroTextureProperties( 
+		const VkFormat format,
+		const VkImageLayout layout
+	);
+
+	MicroTextureProperties( 
+		const VkFormat format,
+		const VkImageLayout layout,
+		const VkExtent3D& extend
+	);
+
+	MicroTextureProperties( 
+		const VkFormat format,
+		const VkImageLayout layout,
+		const VkExtent3D& extend,
+		const uint32_t mip_levels,
+		const uint32_t array_layers
+	);
 
 };

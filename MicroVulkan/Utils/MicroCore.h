@@ -38,4 +38,5 @@
 #endif
 
 #include <vulkan/vulkan.h>
+#include <shaderc/shaderc.hpp>
 #include <spirv-headers/spirv.hpp>

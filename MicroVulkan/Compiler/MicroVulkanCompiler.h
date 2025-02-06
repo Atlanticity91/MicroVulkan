@@ -33,46 +33,107 @@
 
 #include "../MicroVulkan.h"
 
-/**
- * MicroVulkanCompiler class final
- * @note : 
- **/
+micro_struct MicroVulkanCompilerMacro {
+
+	micro_string Name;
+	micro_string Value;
+
+};
+
+micro_enum_class MicroVulkanCompilerLanguage : uint32_t {
+
+	GLSL = 0,
+	HLSL
+
+};
+
+micro_enum_class MicroVulkanCompilerOptimization : uint32_t {
+
+	Performance = 0,
+
+};
+
+micro_enum_class MicroVulkanCompilerTargetType : uint32_t {
+
+	Assembler = 0,
+	Binary
+
+};
+
+micro_enum_class MicroVulkanCompilerEnvironment : uint32_t {
+
+	Vulkan = 0,
+	OpenGL
+
+};
+
+micro_struct MicroVulkanCompilerSpecification {
+
+	MicroVulkanCompilerLanguage Language;
+	MicroVulkanCompilerOptimization Optimization;
+	MicroVulkanCompilerTargetType Target;
+	MicroVulkanCompilerEnvironment Environment;
+	std::vector<MicroVulkanCompilerMacro> Macros;
+
+};
+
+micro_struct MicroVulkanCompilerResult {
+
+	std::vector<uint8_t> Output;
+
+	MicroVulkanCompilerResult( )
+		: Output{ } 
+	{ };
+
+	MicroVulkanCompilerResult(
+		MicroVulkanCompilerResult&& other
+	) noexcept 
+		: Output{ std::move( other.Output ) }
+	{ };
+
+	bool GetIsValid( ) const {
+		return Output.size( ) > 0;
+	};
+
+	operator bool ( ) const {
+		return GetIsValid( );
+	};
+
+};
+
 micro_class MicroVulkanCompiler final {
 
+private:
+	shaderc::Compiler m_compiler;
+	shaderc::CompileOptions m_options;
+
 public:
-	/**
-	 * Constructor
-	 **/
 	MicroVulkanCompiler( );
 
-	/**
-	 * Destructor
-	 **/
 	~MicroVulkanCompiler( ) = default;
 
-	/**
-	 * Compile function
-	 * @note : Compile shader source code.
-	 * @param source : Query shader source code.
-	 * @return : Return true when shader source compilation succeeded.
-	 **/
-	bool Compile( const std::vector<char>& source );
+	void Register( const MicroVulkanCompilerMacro& macro );
+	
+	void Register( std::initializer_list<MicroVulkanCompilerMacro> macros );
+	
+	void Register( micro_string name, micro_string value );
 
-	/**
-	 * Compile function
-	 * @note : Compile shader source code.
-	 * @param source : Query shader source code.
-	 * @return : Return true when shader source compilation succeeded.
-	 **/
-	bool Compile( const std::string& source );
+	void Register( const std::string& name, const std::string& value );
 
-	/**
-	 * Compile function
-	 * @note : Compile shader source code.
-	 * @param length : Query shader source code length.
-	 * @param source : Query shader source code pointer.
-	 * @return : Return true when shader source compilation succeeded.
-	 **/
-	bool Compile( const uint32_t length, micro_string source );
+	MicroVulkanCompilerResult Compile(
+		const MicroVulkanCompilerSpecification& specification,
+		const std::string source
+	);
+
+	MicroVulkanCompilerResult Compile(
+		const MicroVulkanCompilerSpecification& specification,
+		micro_string code,
+		const uint32_t length
+	);
+
+	MicroVulkanCompilerResult CompileFile(
+		const MicroVulkanCompilerSpecification& specification,
+		const std::string path
+	);
 
 };

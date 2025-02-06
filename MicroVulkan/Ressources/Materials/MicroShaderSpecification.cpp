@@ -29,16 +29,13 @@
  *
  **/
 
-#pragma once 
+#include "__micro_vulkan_pch.h"
 
-#include "../Specifications/MicroVulkanSpecification.h"
-
-micro_struct MicroVulkanWindow {
-
-	virtual bool CreateSurface( VkInstance& instance, VkSurfaceKHR& surface ) const = 0;
-
-	virtual void GetExtensions( std::vector<micro_string>& extension_list ) const = 0;
-
-	virtual micro_upoint GetDimensions( ) const = 0;
-
-};
+////////////////////////////////////////////////////////////////////////////////////////////
+//		===	PUBLIC ===
+////////////////////////////////////////////////////////////////////////////////////////////
+MicroShaderSpecification::MicroShaderSpecification( ) 
+	: Stage{ VK_SHADER_STAGE_VERTEX_BIT },
+	Name{ "" },
+	Code{ }
+{ }

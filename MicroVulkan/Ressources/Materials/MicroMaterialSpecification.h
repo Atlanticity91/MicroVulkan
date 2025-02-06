@@ -35,14 +35,10 @@
 
 micro_struct MicroMaterialSpecification {
 
-	uint32_t RenderPass = 0;
-	uint32_t Subpass	= 0;
-	std::vector<MicroShaderSpecification> Shaders{ };
+	uint32_t RenderPass;
+	uint32_t Subpass;
+	std::vector<MicroShaderSpecification> Shaders;
 
-	MicroMaterialSpecification( ) 
-		: RenderPass{ 0 },
-		Subpass{ 0 },
-		Shaders{ }
-	{ };
+	MicroMaterialSpecification( );
 
 };

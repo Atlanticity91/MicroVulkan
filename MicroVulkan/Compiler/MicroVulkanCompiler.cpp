@@ -35,22 +35,128 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 MicroVulkanCompiler::MicroVulkanCompiler( )
+	: m_compiler{ },
+	m_options{ }
 { }
 
-bool MicroVulkanCompiler::Compile( const std::vector<char>& source ) {
-	auto* source_string = source.data( );
-	auto source_length  = (uint32_t)source.size( );
-
-	return Compile( source_length, source_string );
+void MicroVulkanCompiler::Register( const MicroVulkanCompilerMacro& macro ) {
+	Register( macro.Name, macro.Value );
 }
 
-bool MicroVulkanCompiler::Compile( const std::string& source ) {
-	auto* source_string = source.c_str( );
-	auto source_length  = (uint32_t)source.length( );
-
-	return Compile( source_length, source_string );
+void MicroVulkanCompiler::Register( 
+	std::initializer_list<MicroVulkanCompilerMacro> macros 
+) {
+	for ( const auto& macro : macros )
+		Register( macro.Name, macro.Value );
 }
 
-bool MicroVulkanCompiler::Compile( const uint32_t length, micro_string source ) {
+void MicroVulkanCompiler::Register( micro_string name, micro_string value ) {
+	const auto name_length  = strlen( name );
+	const auto value_length = strlen( value );
+
+	if ( name_length == 0 || value_length == 0 )
+		return;
+
+	m_options.AddMacroDefinition( name, name_length, value, value_length );
+}
+
+void MicroVulkanCompiler::Register( const std::string& name, const std::string& value ) {
+	const auto* name_string  = name.c_str( );
+	const auto* value_string = value.c_str( );
+
+	Register( name_string, value_string );
+}
+
+MicroVulkanCompilerResult MicroVulkanCompiler::Compile(
+	const MicroVulkanCompilerSpecification& specification,
+	const std::string source
+) {
+	const auto* code  = source.c_str( );
+	const auto length = (uint32_t)source.size( );
+
+	return Compile( specification, code, length );
+}
+
+MicroVulkanCompilerResult MicroVulkanCompiler::Compile(
+	const MicroVulkanCompilerSpecification& specification,
+	micro_string code,
+	const uint32_t length
+) {
+	auto result = MicroVulkanCompilerResult{ };
+
+	return result;
+}
+
+MicroVulkanCompilerResult MicroVulkanCompiler::CompileFile(
+	const MicroVulkanCompilerSpecification& specification,
+	const std::string path
+) {
+	auto result = MicroVulkanCompilerResult{ };
+
+	return result;
+}
+
+/*
+bool ProcessGLSL( const MicroVulkanCompilerSource& source, shaderc::CompileOptions& options  ) {
+	auto* source_str = context.Source.get( );
+	auto source_len  = context.Source.length( );
+	auto* name_str   = context.Name.get( );
+	auto preprocess  = m_compiler.PreprocessGlsl( source_str, source_len, shaderc_glsl_infer_from_source, name_str, options );
+	auto status		 = preprocess.GetCompilationStatus( );
+	
+	if ( status == shaderc_compilation_status_success ) {
+		auto spirv = m_compiler.CompileGlslToSpv( preprocess.begin( ), shaderc_glsl_infer_from_source, name_str, options );
+
+		status = spirv.GetCompilationStatus( );
+		
+		if ( status == shaderc_compilation_status_success ) {
+			auto size = tiny_cast( spirv.end( ) - spirv.begin( ), tiny_uint ) * tiny_sizeof( tiny_uint );
+			
+			specification.Type  = PeekType( context.Source );
+			specification.Entry = context.Entry.as_string( );
+			specification.Code  = size;
+
+			auto* src = spirv.begin( );
+			auto* dst = specification.Code.data( );
+
+			Tiny::Memcpy( src, dst, size );
+		} else
+			printf( "[ VK ] Shader Compilation Error : %s\n%s\n", name_str, spirv.GetErrorMessage( ).c_str( ) );
+	} else 
+		printf( "[ VK ] Shader Compilation Error : %s\n%s\n", name_str, preprocess.GetErrorMessage( ).c_str( ) );
+
+	return status == shaderc_compilation_status_success;
+}
+
+bool ProcessHLSL( const MicroVulkanCompilerSource& source, shaderc::CompileOptions& options ) {
+
 	return false;
 }
+
+bool d( const MicroVulkanCompilerSource& source ) {
+	// OPTIONS
+	auto options = shaderc::CompileOptions{ m_options };
+	auto result  = false;
+
+	options.SetSourceLanguage( shaderc_source_language_glsl ); // source.Language
+	options.SetOptimizationLevel( shaderc_optimization_level_performance ); // source.Optimization
+	options.SetTargetEnvironment( shaderc_target_env_vulkan, shaderc_env_version_vulkan_1_3 ); //source.Environment
+
+	for ( const auto& macro : source.Macros ) {
+		const auto name_length  = strlen( macro.Name );
+		const auto value_length = strlen( macro.Value );
+
+		options.AddMacroDefinition( macro.Name, name_length, macro.Value, value_length );	
+	}
+
+	// COMPILATION
+	switch ( source.Language ) {
+		case MicroVulkanCompilerLanguage::GLSL : result = ProcessGLSL( source, options ); break;
+		case MicroVulkanCompilerLanguage::HLSL : result = ProcessHLSL( source, options ); break;
+
+		default : break;
+	}
+
+	return result;
+}
+*/

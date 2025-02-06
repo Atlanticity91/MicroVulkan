@@ -31,15 +31,12 @@
 
 #pragma once
 
-#include "MicroVulkanBuffer.h"
+#include "MicroTextureProperties.h"
 
-micro_struct MicroVulkanStagingBuffer {
+enum MicroVulkanTextureUsage : uint32_t {
 
-	VkBool32 InUse;
-	uint32_t Length;
-	VkFence Sync;
-	MicroVulkanBuffer Buffer;
-
-	MicroVulkanStagingBuffer( );
+	MVT_USAGE_TEXTURE = VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT,
+	MVT_USAGE_COLOR   = VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
+	MVT_USAGE_DEPTH   = VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT
 
 };
