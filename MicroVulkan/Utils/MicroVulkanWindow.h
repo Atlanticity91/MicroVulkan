@@ -35,10 +35,15 @@
 
 micro_struct MicroVulkanWindow {
 
-	virtual bool CreateSurface( VkInstance& instance, VkSurfaceKHR& surface ) const = 0;
+	micro_abstract( bool CreateSurface( 
+		VkInstance& instance, 
+		VkSurfaceKHR& surface 
+	) const );
 
-	virtual void GetExtensions( std::vector<micro_string>& extension_list ) const = 0;
+	micro_abstract( void GetExtensions( 
+		std::vector<micro_string>& extension_list 
+	) const );
 
-	virtual micro_upoint GetDimensions( ) const = 0;
+	micro_abstract( micro_upoint GetVKDimensions( ) const);
 
 };

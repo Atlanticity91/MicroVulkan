@@ -234,7 +234,7 @@ void MicroVulkan::DestroyRenderContext( MicroVulkanRenderContext& render_context
 }
 
 void MicroVulkan::Recreate( const MicroVulkanWindow& window ) {
-	auto dimensions = window.GetDimensions( );
+	const auto dimensions = window.GetVKDimensions( );
 
 	m_device.Wait( );
 

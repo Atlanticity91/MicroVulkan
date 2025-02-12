@@ -67,7 +67,7 @@ namespace vk {
 	 * QueueSpecification struct
 	 * @note : Device queue specification.
 	 **/
-	struct QueueSpecification {
+	micro_struct QueueSpecification {
 
 		uint32_t Graphics		= UINT32_MAX;
 		uint32_t GraphicsCount  = 0;
@@ -90,7 +90,7 @@ namespace vk {
 	 * DeviceSpecification sturct
 	 * @note : Device specification wrapper.
 	 **/
-	struct DeviceSpecification {
+	micro_struct DeviceSpecification {
 
 		VkPhysicalDeviceProperties Properties{ };
 		VkPhysicalDeviceFeatures Features{ };
@@ -102,7 +102,7 @@ namespace vk {
 	 * PipelineBarrier struct
 	 * @note : Defined Vulkan pipeline barrier base data wrapper.
 	 **/
-	struct PipelineBarrier {
+	micro_struct PipelineBarrier {
 
 		VkPipelineStageFlags SrcStageMask = VK_PIPELINE_STAGE_NONE;
 		VkPipelineStageFlags DstStageMask = VK_PIPELINE_STAGE_NONE;
@@ -114,7 +114,7 @@ namespace vk {
 	 * BufferBindSpecification struct
 	 * @note : Vulkan buffer bind specifiation wrapper.
 	 **/
-	struct BufferBindSpecification {
+	micro_struct BufferBindSpecification {
 
 		VkBuffer Buffer		= VK_NULL_HANDLE;
 		VkDeviceSize Offset = 0;
@@ -271,7 +271,8 @@ namespace vk {
 		VkPipelineCache& pipeline_cache
 	);
 
-	void DestroyPipelineCache( const VkDevice& device, VkPipelineCache& pipeline_cache );
+	void DestroyPipelineCache( const VkDevice& device, 
+							   VkPipelineCache& pipeline_cache );
 
 	VkResult CreatePipelineLayout(
 		const VkDevice& device,
@@ -287,7 +288,8 @@ namespace vk {
 		VkDescriptorPool& descriptor_pool
 	);
 
-	void DestroyDescriptorPool( const VkDevice& device, VkDescriptorPool& descriptor_pool );
+	void DestroyDescriptorPool( const VkDevice& device, 
+								VkDescriptorPool& descriptor_pool );
 
 	VkResult AllocateDescriptors(
 		const VkDevice& device,
@@ -414,13 +416,24 @@ namespace vk {
 		const std::vector<BufferBindSpecification>& buffer_binds
 	);
 
-	void EnumerateInstanceExtension( std::vector<VkExtensionProperties>& extension_list );
+	void EnumerateInstanceExtension( 
+		std::vector<VkExtensionProperties>& extension_list 
+	);
 
-	void EnumeratePhysicalDevices( const VkInstance& instance, std::vector<VkPhysicalDevice>& physical_list );
+	void EnumeratePhysicalDevices( 
+		const VkInstance& instance, 
+		std::vector<VkPhysicalDevice>& physical_list
+	);
 
-	void EnumeratePhysicalExtension( const VkPhysicalDevice& physical, std::vector<VkExtensionProperties>& extensions );
+	void EnumeratePhysicalExtension( 
+		const VkPhysicalDevice& physical, 
+		std::vector<VkExtensionProperties>& extensions 
+	);
 
-	void EnumeratePhysicalQueueFamilies( const VkPhysicalDevice& physical, std::vector<VkQueueFamilyProperties>& queue_list );
+	void EnumeratePhysicalQueueFamilies( 
+		const VkPhysicalDevice& physical, 
+		std::vector<VkQueueFamilyProperties>& queue_list 
+	);
 
 	/**
 	 * EnumerateSwapchainFormats method
@@ -496,7 +509,10 @@ namespace vk {
 
 	template<typename VkFunction>
 		requires IsVkObject<VkFunction>
-	VkFunction GetInstanceProcAddr( const VkInstance& instance, const char* procedure ) {
+	VkFunction GetInstanceProcAddr( 
+		const VkInstance& instance, 
+		micro_string procedure 
+	) {
 		return (VkFunction)vkGetInstanceProcAddr( instance, procedure );
 	};
 

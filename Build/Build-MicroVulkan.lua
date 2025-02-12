@@ -25,8 +25,8 @@ project "MicroVulkan"
 
 	--- GLOBAL SOURCE FILES
 	files { 
-		"%{IncludeDirs.MicroVulkan}/**.h", 
-		"%{IncludeDirs.MicroVulkan}/**.cpp" 
+		"%{IncludeDirs.MicroVulkan}**.h", 
+		"%{IncludeDirs.MicroVulkan}**.cpp" 
 	}
 
 	-- LINUX
@@ -48,7 +48,7 @@ project "MicroVulkan"
 			"_CRT_SECURE_NO_WARNINGS"
 		}
 
-		-- PRECOMPILED SOURCE
+		--- PRECOMPILED SOURCE
 		pchsource "../MicroVulkan/__micro_vulkan_pch.cpp"
 
 	--- CONFIGURATION

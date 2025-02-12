@@ -110,6 +110,8 @@ extern "C" {
  **/
 #define micro_unused( VAR ) ( (void)VAR )
 
+#define micro_mask( VAR, MASK ) ( VAR & MASK )
+
 /**
  * micro_compile_if macro
  * @note : Wrapper for Compile time if dispatch.
@@ -186,7 +188,7 @@ extern "C" {
 #	endif
 #	define MICRO_API
 #endif
-
+ 
 /**
  * micro_enum_class macro
  * @note : Wrapper for exposing enum.
@@ -219,10 +221,14 @@ extern "C" {
 
 /**
  * micro_implement macro
- * @note : Wrapper for C++ override function syntax, to use in
+ * @note : Wrapper for C++ override function syntax, to use in 
  *		   addition of micro_abstract for clarity.
  **/
 #define micro_implement( SIGNATURE ) virtual SIGNATURE override
+
+#define micro_optional( SIGNATURE, RETURN ) virtual SIGNATURE { return RETURN; };
+
+#define micro_optional2( SIGNATURE ) micro_optional( SIGNATURE, )
 
 /**
  * micro_stringifyx macro
@@ -270,22 +276,3 @@ constexpr uint32_t micro_array_size = ( Count > 0 ) ? Count : 1;
  **/
 template<typename Type>
 concept micro_is_movable = std::is_move_constructible<Type>::value && std::is_move_assignable<Type>::value;
-
-
-#define micro_assert( ... )
-
-struct micro_upoint { 
-
-	uint32_t x;
-	uint32_t y;
-
-	micro_upoint( )
-		: micro_upoint{ 0, 0 } 
-	{ };
-
-	micro_upoint( const uint32_t x, const uint32_t y ) \
-		: x{ x },
-		y{ y }
-	{ };
-
-};

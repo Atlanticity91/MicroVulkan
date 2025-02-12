@@ -168,8 +168,8 @@ bool MicroVulkanSwapchain::CreateSwapchain(
     const MicroVulkanInstance& instance,
     const MicroVulkanDevice& device
 ) {
-    auto dimensions    = window.GetDimensions( );
-    auto specification = CreateSwapchainSpec( instance, device, dimensions );
+    const auto dimensions    = window.GetVKDimensions( );
+    const auto specification = CreateSwapchainSpec( instance, device, dimensions );
 
     return vk::CreateSwapchain( device, specification, m_swapchain ) == VK_SUCCESS;
 }

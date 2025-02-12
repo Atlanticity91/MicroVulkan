@@ -140,7 +140,7 @@ void MicroVulkanFramebuffers::Destroy( const MicroVulkanDevice& device ) {
 micro_upoint MicroVulkanFramebuffers::CreateDimensionsSpec( 
     const MicroVulkanWindow& window
 ) {
-    auto dimensions_spec = window.GetDimensions( );
+    const auto dimensions_spec = window.GetVKDimensions( );
 
     return CreateDimensionsSpec( dimensions_spec );
 }

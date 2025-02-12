@@ -32,7 +32,7 @@
 #pragma once 
 
 #ifdef MICRO_USE_CORE
-#	include <MicroCore/MicroCore.h>
+#	include "MicroCore/MicroCore.h"
 #else
 #	include "MicroTraits.h"
 #endif
