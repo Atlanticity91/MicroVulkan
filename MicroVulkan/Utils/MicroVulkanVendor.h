@@ -126,14 +126,18 @@ namespace vk {
 	 * @note : Set current allocator callback structure.
 	 * @param allocator : Reference to the new allocator callback structure.
 	 **/
-	void SetAllocationCallback( const VkAllocationCallbacks& allocator );
+	MICRO_API void SetAllocationCallback( const VkAllocationCallbacks& allocator );
 
 	/**
 	 * GetAllocationCallback function
 	 * @note : Get current allocator callback structure.
 	 * @return : Reference to current allocator callback structure.
 	 **/
-	const VkAllocationCallbacks& GetAllocationCallback( );
+	MICRO_API const VkAllocationCallbacks& GetAllocationCallback( );
+
+	MICRO_API bool GetIsSuccess( const VkResult result );
+
+	MICRO_API micro_string GetResultString( const VkResult result );
 
 	/**
 	 * CreateInstance function
@@ -288,8 +292,10 @@ namespace vk {
 		VkDescriptorPool& descriptor_pool
 	);
 
-	void DestroyDescriptorPool( const VkDevice& device, 
-								VkDescriptorPool& descriptor_pool );
+	void DestroyDescriptorPool( 
+		const VkDevice& device, 
+		VkDescriptorPool& descriptor_pool 
+	);
 
 	VkResult AllocateDescriptors(
 		const VkDevice& device,

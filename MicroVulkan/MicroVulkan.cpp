@@ -267,8 +267,16 @@ const MicroVulkanSwapchain& MicroVulkan::GetSwapchain( ) const {
 	return m_swapchain;
 }
 
-const MicroVulkanRenderPasses& MicroVulkan::GetPasses( ) const {
+const MicroVulkanSwapchainSpecification& MicroVulkan::GetSwapchainSpecification( ) const {
+	return m_swapchain.GetSpecification( );
+}
+
+const MicroVulkanRenderPasses& MicroVulkan::GetRenderPasses( ) const {
 	return m_passes;
+}
+
+const VkRenderPass MicroVulkan::GetRenderPass( const uint32_t render_pass_id ) const {
+	return m_passes.Get( render_pass_id );
 }
 
 const MicroVulkanStagings& MicroVulkan::GetStaging( ) const {

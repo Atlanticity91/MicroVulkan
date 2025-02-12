@@ -35,6 +35,7 @@
 #	include "MicroCore/MicroCore.h"
 #else
 #	include "MicroTraits.h"
+#	define micro_assert( exp, msg ) assert( ((void)msg, exp) )
 #endif
 
 #include <vulkan/vulkan.h>

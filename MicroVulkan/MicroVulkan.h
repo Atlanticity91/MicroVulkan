@@ -126,7 +126,11 @@ public:
 
 	const MicroVulkanSwapchain& GetSwapchain( ) const;
 
-	const MicroVulkanRenderPasses& GetPasses( ) const;
+	const MicroVulkanSwapchainSpecification& GetSwapchainSpecification( ) const;
+
+	const MicroVulkanRenderPasses& GetRenderPasses( ) const;
+
+	const VkRenderPass GetRenderPass( const uint32_t render_pass_id ) const;
 
 	MicroVulkanStagings& GetStaging( );
 

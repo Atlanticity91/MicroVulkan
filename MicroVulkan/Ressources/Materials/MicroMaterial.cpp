@@ -47,7 +47,7 @@ bool MicroMaterial::Create(
 ) {
     auto& pipelines = vulkan.GetPipelines( );
 	auto& device = vulkan.GetDevice( );
-    auto& passes = vulkan.GetPasses( );
+    auto& passes = vulkan.GetRenderPasses( );
 
     return  CreateLayout( device ) &&
             CreatePipeline( device, pipelines, passes, specification );
@@ -222,7 +222,7 @@ bool MicroMaterial::CreatePipeline(
     pipeline_spec.pMultisampleState = nullptr;
     pipeline_spec.pDepthStencilState = nullptr;
     pipeline_spec.pColorBlendState = nullptr;
-    pipeline_spec.pDynamicState = &dynamic_state_spec;
+    pipeline_spec.pDynamicState = micro_ptr( dynamic_state_spec );
 
     can_create = can_create && vk::CreatePipeline( device, pipelines.GetCache( ), pipeline_spec, m_pipeline ) == VK_SUCCESS;
 

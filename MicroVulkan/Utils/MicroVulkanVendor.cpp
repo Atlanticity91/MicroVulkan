@@ -34,11 +34,8 @@
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	INTERNAL ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-#ifndef MICRO_CUSTOM_CORE
-#	define mvk_assertm( exp, msg ) micro_assert( exp, msg )
-#else
-#	define mvk_assertm( exp, msg ) assert( ((void)msg, exp) )
-#endif
+#define vk_case_as_string( VALUE )\
+	case VALUE : result_string = micro_stringify( VALUE ); break
 
 VkAllocationCallbacks* ivk_Allocator = VK_NULL_HANDLE;
 PFN_vkCreateDebugUtilsMessengerEXT ivk_CreateDebugMessenger = VK_NULL_HANDLE;
@@ -50,7 +47,7 @@ PFN_vkDestroyDebugUtilsMessengerEXT ivk_DestroyDebugMessenger = VK_NULL_HANDLE;
 namespace vk {
 
 	QueueSpecification::operator const uint32_t* ( ) const {
-		return &Graphics;
+		return micro_ptr( Graphics );
 	}
 
 	void SetAllocationCallback( const VkAllocationCallbacks& allocator ) {
@@ -61,6 +58,103 @@ namespace vk {
 		return micro_ref( ivk_Allocator );
 	}
 
+	bool GetIsSuccess( const VkResult result ) {
+		auto state = true;
+
+		switch ( result ) {
+			case  VK_ERROR_OUT_OF_HOST_MEMORY:
+			case  VK_ERROR_OUT_OF_DEVICE_MEMORY:
+			case  VK_ERROR_INITIALIZATION_FAILED:
+			case  VK_ERROR_DEVICE_LOST:
+			case  VK_ERROR_MEMORY_MAP_FAILED:
+			case  VK_ERROR_LAYER_NOT_PRESENT:
+			case  VK_ERROR_EXTENSION_NOT_PRESENT:
+			case  VK_ERROR_FEATURE_NOT_PRESENT:
+			case  VK_ERROR_INCOMPATIBLE_DRIVER:
+			case  VK_ERROR_TOO_MANY_OBJECTS:
+			case  VK_ERROR_FORMAT_NOT_SUPPORTED:
+			case  VK_ERROR_FRAGMENTED_POOL:
+			case  VK_ERROR_SURFACE_LOST_KHR:
+			case  VK_ERROR_NATIVE_WINDOW_IN_USE_KHR:
+			case  VK_ERROR_OUT_OF_DATE_KHR:
+			case  VK_ERROR_INCOMPATIBLE_DISPLAY_KHR:
+			case  VK_ERROR_INVALID_SHADER_NV:
+			case  VK_ERROR_OUT_OF_POOL_MEMORY:
+			case  VK_ERROR_INVALID_EXTERNAL_HANDLE:
+			case  VK_ERROR_FRAGMENTATION:
+			case  VK_ERROR_INVALID_DEVICE_ADDRESS_EXT:
+			case  VK_ERROR_FULL_SCREEN_EXCLUSIVE_MODE_LOST_EXT:
+			case  VK_ERROR_UNKNOWN:
+				state = false;
+				break;
+
+			default : break;
+		}
+
+		return state;
+	}
+
+	micro_string GetResultString( const VkResult result ) {
+		auto result_string = "";
+
+		switch ( result ) {
+			vk_case_as_string( VK_SUCCESS );
+			vk_case_as_string( VK_NOT_READY );
+			vk_case_as_string( VK_TIMEOUT );
+			vk_case_as_string( VK_EVENT_SET );
+			vk_case_as_string( VK_EVENT_RESET );
+			vk_case_as_string( VK_INCOMPLETE );
+			vk_case_as_string( VK_ERROR_OUT_OF_HOST_MEMORY );
+			vk_case_as_string( VK_ERROR_OUT_OF_DEVICE_MEMORY );
+			vk_case_as_string( VK_ERROR_INITIALIZATION_FAILED );
+			vk_case_as_string( VK_ERROR_DEVICE_LOST );
+			vk_case_as_string( VK_ERROR_MEMORY_MAP_FAILED );
+			vk_case_as_string( VK_ERROR_LAYER_NOT_PRESENT );
+			vk_case_as_string( VK_ERROR_EXTENSION_NOT_PRESENT );
+			vk_case_as_string( VK_ERROR_FEATURE_NOT_PRESENT );
+			vk_case_as_string( VK_ERROR_INCOMPATIBLE_DRIVER );
+			vk_case_as_string( VK_ERROR_TOO_MANY_OBJECTS );
+			vk_case_as_string( VK_ERROR_FORMAT_NOT_SUPPORTED );
+			vk_case_as_string( VK_ERROR_FRAGMENTED_POOL );
+			vk_case_as_string( VK_ERROR_UNKNOWN );
+			vk_case_as_string( VK_ERROR_OUT_OF_POOL_MEMORY );
+			vk_case_as_string( VK_ERROR_INVALID_EXTERNAL_HANDLE );
+			vk_case_as_string( VK_ERROR_FRAGMENTATION );
+			vk_case_as_string( VK_ERROR_INVALID_OPAQUE_CAPTURE_ADDRESS );
+			vk_case_as_string( VK_PIPELINE_COMPILE_REQUIRED );
+			vk_case_as_string( VK_ERROR_SURFACE_LOST_KHR );
+			vk_case_as_string( VK_ERROR_NATIVE_WINDOW_IN_USE_KHR );
+			vk_case_as_string( VK_SUBOPTIMAL_KHR );
+			vk_case_as_string( VK_ERROR_OUT_OF_DATE_KHR );
+			vk_case_as_string( VK_ERROR_INCOMPATIBLE_DISPLAY_KHR );
+			vk_case_as_string( VK_ERROR_VALIDATION_FAILED_EXT );
+			vk_case_as_string( VK_ERROR_INVALID_SHADER_NV );
+			vk_case_as_string( VK_ERROR_IMAGE_USAGE_NOT_SUPPORTED_KHR );
+			vk_case_as_string( VK_ERROR_VIDEO_PICTURE_LAYOUT_NOT_SUPPORTED_KHR );
+			vk_case_as_string( VK_ERROR_VIDEO_PROFILE_OPERATION_NOT_SUPPORTED_KHR );
+			vk_case_as_string( VK_ERROR_VIDEO_PROFILE_FORMAT_NOT_SUPPORTED_KHR );
+			vk_case_as_string( VK_ERROR_VIDEO_PROFILE_CODEC_NOT_SUPPORTED_KHR );
+			vk_case_as_string( VK_ERROR_VIDEO_STD_VERSION_NOT_SUPPORTED_KHR );
+			vk_case_as_string( VK_ERROR_INVALID_DRM_FORMAT_MODIFIER_PLANE_LAYOUT_EXT );
+			vk_case_as_string( VK_ERROR_NOT_PERMITTED_KHR );
+			vk_case_as_string( VK_ERROR_FULL_SCREEN_EXCLUSIVE_MODE_LOST_EXT );
+			vk_case_as_string( VK_THREAD_IDLE_KHR );
+			vk_case_as_string( VK_THREAD_DONE_KHR );
+			vk_case_as_string( VK_OPERATION_DEFERRED_KHR );
+			vk_case_as_string( VK_OPERATION_NOT_DEFERRED_KHR );
+			vk_case_as_string( VK_ERROR_INVALID_VIDEO_STD_PARAMETERS_KHR );
+			vk_case_as_string( VK_ERROR_COMPRESSION_EXHAUSTED_EXT );
+			vk_case_as_string( VK_INCOMPATIBLE_SHADER_BINARY_EXT );
+			vk_case_as_string( VK_PIPELINE_BINARY_MISSING_KHR );
+			vk_case_as_string( VK_ERROR_NOT_ENOUGH_SPACE_KHR );
+			vk_case_as_string( VK_RESULT_MAX_ENUM );
+
+			default : break;
+		}
+
+		return result_string;
+	}
+
 	VkResult CreateInstance(
 		const VkInstanceCreateInfo& specification,
 		VkInstance& instance
@@ -69,11 +163,12 @@ namespace vk {
 	}
 
 	void DestroyInstance( VkInstance& instance ) {
-		if ( IsValid( instance ) ) {
-			vkDestroyInstance( instance, ivk_Allocator );
+		if ( !IsValid( instance ) )
+			return;
 
-			instance = VK_NULL_HANDLE;
-		}
+		vkDestroyInstance( instance, ivk_Allocator );
+
+		instance = VK_NULL_HANDLE;
 	}
 
 	VkResult CreateDebugMessenger(
@@ -81,16 +176,16 @@ namespace vk {
 		const VkDebugUtilsMessengerCreateInfoEXT& specification,
 		VkDebugUtilsMessengerEXT& messenger
 	) {
-		mvk_assertm( IsValid( instance ), "Vulkan Instance must be valid to use this function" );
+		micro_assert( IsValid( instance ), "Vulkan Instance must be valid to use this function" );
 
-		ivk_CreateDebugMessenger  = vk::GetInstanceProcAddr<PFN_vkCreateDebugUtilsMessengerEXT>( instance, "vkCreateDebugUtilsMessengerEXT" );
+		ivk_CreateDebugMessenger = vk::GetInstanceProcAddr<PFN_vkCreateDebugUtilsMessengerEXT>( instance, "vkCreateDebugUtilsMessengerEXT" );
 		ivk_DestroyDebugMessenger = vk::GetInstanceProcAddr<PFN_vkDestroyDebugUtilsMessengerEXT>( instance, "vkDestroyDebugUtilsMessengerEXT" );
-		
+
 		return ivk_CreateDebugMessenger( instance, micro_ptr( specification ), ivk_Allocator, micro_ptr( messenger ) );
 	}
 
 	void DeviceWait( const VkDevice& device ) {
-		mvk_assertm( IsValid( device ), "Vulkan Device must be valid to use this function" );
+		micro_assert( IsValid( device ), "Vulkan Device must be valid to use this function" );
 
 		vkDeviceWaitIdle( device );
 	}
@@ -99,39 +194,42 @@ namespace vk {
 		const VkInstance& instance,
 		VkDebugUtilsMessengerEXT& messenger
 	) {
-		mvk_assertm( IsValid( instance ), "Vulkan Instance must be valid to use this function" );
+		micro_assert( IsValid( instance ), "Vulkan Instance must be valid to use this function" );
 
-		if ( vk::IsValid( messenger ) ) {
-			ivk_DestroyDebugMessenger( instance, messenger, ivk_Allocator );
+		if ( !vk::IsValid( messenger ) )
+			return;
 
-			messenger = nullptr;
-		}
+		ivk_DestroyDebugMessenger( instance, messenger, ivk_Allocator );
+
+		messenger = nullptr;
 	}
 
 	void DestroySurface( VkInstance& instance, VkSurfaceKHR& surface ) {
-		if ( IsValid( instance ) && IsValid( surface ) ) {
-			vkDestroySurfaceKHR( instance, surface, ivk_Allocator );
+		if ( !IsValid( instance ) || !IsValid( surface ) )
+			return;
 
-			surface = VK_NULL_HANDLE;
-		}
+		vkDestroySurfaceKHR( instance, surface, ivk_Allocator );
+
+		surface = VK_NULL_HANDLE;
 	}
 
-	VkResult CreateDevice( 
+	VkResult CreateDevice(
 		const VkPhysicalDevice physical,
 		const VkDeviceCreateInfo& specification,
 		VkDevice& device
-	) { 
-		mvk_assertm( IsValid( physical ), "Vulkan Physical Device must be valid to use this function" );
+	) {
+		micro_assert( IsValid( physical ), "Vulkan Physical Device must be valid to use this function" );
 
 		return vkCreateDevice( physical, micro_ptr( specification ), ivk_Allocator, micro_ptr( device ) );
 	}
 
 	void DestroyDevice( VkDevice& device ) {
-		if ( IsValid( device ) ) {
-			vkDestroyDevice( device, ivk_Allocator );
+		if ( !IsValid( device ) )
+			return;
 
-			device = nullptr;
-		}
+		vkDestroyDevice( device, ivk_Allocator );
+
+		device = nullptr;
 	}
 
 	VkResult CreateSwapchain(
@@ -139,17 +237,18 @@ namespace vk {
 		const VkSwapchainCreateInfoKHR& specification,
 		VkSwapchainKHR& swapchain
 	) {
-		mvk_assertm( IsValid( device ), "Vulkan Device must be valid to use this function" );
+		micro_assert( IsValid( device ), "Vulkan Device must be valid to use this function" );
 
 		return vkCreateSwapchainKHR( device, micro_ptr( specification ), ivk_Allocator, micro_ptr( swapchain ) );
 	}
 
 	void DestroySwapchain( const VkDevice& device, VkSwapchainKHR& swapchain ) {
-		if ( IsValid( device ) && IsValid( swapchain ) ) {
-			vkDestroySwapchainKHR( device, swapchain, ivk_Allocator );
+		if ( !IsValid( device ) || !IsValid( swapchain ) )
+			return;
 
-			swapchain = VK_NULL_HANDLE;
-		}
+		vkDestroySwapchainKHR( device, swapchain, ivk_Allocator );
+
+		swapchain = VK_NULL_HANDLE;
 	}
 
 	VkResult CreateRenderPass(
@@ -157,17 +256,18 @@ namespace vk {
 		const VkRenderPassCreateInfo& specification,
 		VkRenderPass& render_pass
 	) {
-		mvk_assertm( IsValid( device ), "Vulkan Device must be valid to use this function" );
+		micro_assert( IsValid( device ), "Vulkan Device must be valid to use this function" );
 
 		return vkCreateRenderPass( device, micro_ptr( specification ), ivk_Allocator, micro_ptr( render_pass ) );
 	}
 
 	void DestroyRenderPass( const VkDevice& device, VkRenderPass& render_pass ) {
-		if ( IsValid( device ) && IsValid( render_pass ) ) {
-			vkDestroyRenderPass( device, render_pass, ivk_Allocator );
+		if ( !IsValid( device ) || !IsValid( render_pass ) )
+			return;
 
-			render_pass = VK_NULL_HANDLE;
-		}
+		vkDestroyRenderPass( device, render_pass, ivk_Allocator );
+
+		render_pass = VK_NULL_HANDLE;
 	}
 
 	VkResult AllocateMemory(
@@ -175,17 +275,18 @@ namespace vk {
 		const VkMemoryAllocateInfo& specification,
 		VkDeviceMemory& memory
 	) {
-		mvk_assertm( IsValid( device ), "Vulkan Device must be valid to use this function" );
+		micro_assert( IsValid( device ), "Vulkan Device must be valid to use this function" );
 
 		return vkAllocateMemory( device, micro_ptr( specification ), ivk_Allocator, micro_ptr( memory ) );
 	}
 
 	void DeallocateMemory( const VkDevice& device, VkDeviceMemory& memory ) {
-		if ( IsValid( device ) && IsValid( memory ) ) {
-			vkFreeMemory( device, memory, ivk_Allocator );
+		if ( !IsValid( device ) || !IsValid( memory ) )
+			return;
 
-			memory = VK_NULL_HANDLE;
-		}
+		vkFreeMemory( device, memory, ivk_Allocator );
+
+		memory = VK_NULL_HANDLE;
 	}
 
 	VkResult CreateImage(
@@ -193,17 +294,18 @@ namespace vk {
 		const VkImageCreateInfo& specification,
 		VkImage& image
 	) {
-		mvk_assertm( IsValid( device ), "Vulkan Device must be valid to use this function" );
+		micro_assert( IsValid( device ), "Vulkan Device must be valid to use this function" );
 
 		return vkCreateImage( device, micro_ptr( specification ), ivk_Allocator, micro_ptr( image ) );
 	}
 
 	void DestroyImage( const VkDevice& device, VkImage& image ) {
-		if ( IsValid( device ) && IsValid( image ) ) {
-			vkDestroyImage( device, image, ivk_Allocator );
+		if ( !IsValid( device ) || !IsValid( image ) )
+			return;
 
-			image = VK_NULL_HANDLE;
-		}
+		vkDestroyImage( device, image, ivk_Allocator );
+
+		image = VK_NULL_HANDLE;
 	}
 
 	VkResult CreateImageView(
@@ -211,17 +313,18 @@ namespace vk {
 		const VkImageViewCreateInfo& specification,
 		VkImageView& image_view
 	) {
-		mvk_assertm( IsValid( device ), "Vulkan Device must be valid to use this function" );
+		micro_assert( IsValid( device ), "Vulkan Device must be valid to use this function" );
 
 		return vkCreateImageView( device, micro_ptr( specification ), ivk_Allocator, micro_ptr( image_view ) );
 	}
 
 	void DestroyImageView( const VkDevice& device, VkImageView& image_view ) {
-		if ( IsValid( device ) && IsValid( image_view ) ) {
-			vkDestroyImageView( device, image_view, ivk_Allocator );
+		if ( !IsValid( device ) || !IsValid( image_view ) )
+			return;
 
-			image_view = VK_NULL_HANDLE;
-		}
+		vkDestroyImageView( device, image_view, ivk_Allocator );
+
+		image_view = VK_NULL_HANDLE;
 	}
 
 	VkResult CreateImageSampler(
@@ -229,17 +332,18 @@ namespace vk {
 		const VkSamplerCreateInfo& specification,
 		VkSampler& sampler
 	) {
-		mvk_assertm( IsValid( device ), "Vulkan Device must be valid to use this function" );
+		micro_assert( IsValid( device ), "Vulkan Device must be valid to use this function" );
 
 		return vkCreateSampler( device, micro_ptr( specification ), ivk_Allocator, micro_ptr( sampler ) );
 	}
 
 	void DestroyImageSampler( const VkDevice& device, VkSampler& sampler ) {
-		if ( IsValid( device ) && IsValid( sampler ) ) {
-			vkDestroySampler( device, sampler, ivk_Allocator );
+		if ( !IsValid( device ) || !IsValid( sampler ) )
+			return;
 
-			sampler = VK_NULL_HANDLE;
-		}
+		vkDestroySampler( device, sampler, ivk_Allocator );
+
+		sampler = VK_NULL_HANDLE;
 	}
 
 	VkResult CreateFramebuffer(
@@ -247,17 +351,18 @@ namespace vk {
 		const VkFramebufferCreateInfo& specification,
 		VkFramebuffer& framebuffer
 	) {
-		mvk_assertm( IsValid( device ), "Vulkan Device must be valid to use this function" );
+		micro_assert( IsValid( device ), "Vulkan Device must be valid to use this function" );
 
 		return vkCreateFramebuffer( device, micro_ptr( specification ), ivk_Allocator, micro_ptr( framebuffer ) );
 	}
 
 	void DestroyFramebuffer( const VkDevice& device, VkFramebuffer& framebuffer ) {
-		if ( IsValid( device ) && IsValid( framebuffer ) ) {
-			vkDestroyFramebuffer( device, framebuffer, ivk_Allocator );
+		if ( !IsValid( device ) || !IsValid( framebuffer ) )
+			return;
 
-			framebuffer = VK_NULL_HANDLE;
-		}
+		vkDestroyFramebuffer( device, framebuffer, ivk_Allocator );
+
+		framebuffer = VK_NULL_HANDLE;
 	}
 
 	VkResult CreateSemaphore(
@@ -265,17 +370,18 @@ namespace vk {
 		const VkSemaphoreCreateInfo& specification,
 		VkSemaphore& semaphore
 	) {
-		mvk_assertm( IsValid( device ), "Vulkan Device must be valid to use this function" );
+		micro_assert( IsValid( device ), "Vulkan Device must be valid to use this function" );
 
 		return vkCreateSemaphore( device, micro_ptr( specification ), ivk_Allocator, micro_ptr( semaphore ) );
 	}
 
 	void DestroySemaphore( const VkDevice& device, VkSemaphore& semaphore ) {
-		if ( IsValid( device ) && IsValid( semaphore ) ) {
-			vkDestroySemaphore( device, semaphore, ivk_Allocator );
+		if ( !IsValid( device ) || !IsValid( semaphore ) )
+			return;
 
-			semaphore = VK_NULL_HANDLE;
-		}
+		vkDestroySemaphore( device, semaphore, ivk_Allocator );
+
+		semaphore = VK_NULL_HANDLE;
 	}
 
 	VkResult CreateFence(
@@ -283,17 +389,18 @@ namespace vk {
 		const VkFenceCreateInfo& specification,
 		VkFence& fence
 	) {
-		mvk_assertm( IsValid( device ), "Vulkan Device must be valid to use this function" );
+		micro_assert( IsValid( device ), "Vulkan Device must be valid to use this function" );
 
 		return vkCreateFence( device, micro_ptr( specification ), ivk_Allocator, micro_ptr( fence ) );
 	}
 
 	void DestroyFence( const VkDevice& device, VkFence& fence ) {
-		if ( IsValid( device ) && IsValid( fence ) ) {
-			vkDestroyFence( device, fence, ivk_Allocator );
+		if ( !IsValid( device ) || !IsValid( fence ) )
+			return;
 
-			fence = VK_NULL_HANDLE;
-		}
+		vkDestroyFence( device, fence, ivk_Allocator );
+
+		fence = VK_NULL_HANDLE;
 	}
 
 	VkResult CreateCommandPool(
@@ -301,17 +408,18 @@ namespace vk {
 		const VkCommandPoolCreateInfo& specification,
 		VkCommandPool& pool
 	) {
-		mvk_assertm( IsValid( device ), "Vulkan Device must be valid to use this function" );
+		micro_assert( IsValid( device ), "Vulkan Device must be valid to use this function" );
 
 		return vkCreateCommandPool( device, micro_ptr( specification ), ivk_Allocator, micro_ptr( pool ) );
 	}
 
 	void DestroyCommandPool( const VkDevice& device, VkCommandPool& pool ) {
-		if ( IsValid( device ) && IsValid( pool ) ) {
-			vkDestroyCommandPool( device, pool, ivk_Allocator );
+		if ( !IsValid( device ) || !IsValid( pool ) )
+			return;
 
-			pool = VK_NULL_HANDLE;
-		}
+		vkDestroyCommandPool( device, pool, ivk_Allocator );
+
+		pool = VK_NULL_HANDLE;
 	}
 
 	VkResult CreateBuffer(
@@ -319,17 +427,18 @@ namespace vk {
 		const VkBufferCreateInfo& specification,
 		VkBuffer& buffer
 	) {
-		mvk_assertm( IsValid( device ), "Vulkan Device must be valid to use this function" );
+		micro_assert( IsValid( device ), "Vulkan Device must be valid to use this function" );
 
 		return vkCreateBuffer( device, micro_ptr( specification ), ivk_Allocator, micro_ptr( buffer ) );
 	}
 
 	void DestroyBuffer( const VkDevice& device, VkBuffer& buffer ) {
-		if ( IsValid( device ) && IsValid( buffer ) ) {
-			vkDestroyBuffer( device, buffer, ivk_Allocator );
+		if ( !IsValid( device ) || !IsValid( buffer ) )
+			return;
 
-			buffer = VK_NULL_HANDLE;
-		}
+		vkDestroyBuffer( device, buffer, ivk_Allocator );
+
+		buffer = VK_NULL_HANDLE;
 	}
 
 	VkResult CreatePipelineCache(
@@ -337,17 +446,18 @@ namespace vk {
 		const VkPipelineCacheCreateInfo& specification,
 		VkPipelineCache& pipeline_cache
 	) {
-		mvk_assertm( IsValid( device ), "Vulkan Device must be valid to use this function" );
+		micro_assert( IsValid( device ), "Vulkan Device must be valid to use this function" );
 
 		return vkCreatePipelineCache( device, micro_ptr( specification ), ivk_Allocator, micro_ptr( pipeline_cache ) );
 	}
 
 	void DestroyPipelineCache( const VkDevice& device, VkPipelineCache& pipeline_cache ) {
-		if ( IsValid( device ) && IsValid( pipeline_cache ) ) {
-			vkDestroyPipelineCache( device, pipeline_cache, ivk_Allocator );
+		if ( !IsValid( device ) || !IsValid( pipeline_cache ) )
+			return;
 
-			pipeline_cache = VK_NULL_HANDLE;
-		}
+		vkDestroyPipelineCache( device, pipeline_cache, ivk_Allocator );
+
+		pipeline_cache = VK_NULL_HANDLE;
 	}
 
 	VkResult CreatePipelineLayout(
@@ -355,17 +465,18 @@ namespace vk {
 		const VkPipelineLayoutCreateInfo& specification,
 		VkPipelineLayout& layout
 	) {
-		mvk_assertm( IsValid( device ), "Vulkan Device must be valid to use this function" );
+		micro_assert( IsValid( device ), "Vulkan Device must be valid to use this function" );
 
 		return vkCreatePipelineLayout( device, micro_ptr( specification ), ivk_Allocator, micro_ptr( layout ) );
 	}
 
 	void DestroyPipelineLayout( const VkDevice& device, VkPipelineLayout& layout ) {
-		if ( IsValid( device ) && IsValid( layout ) ) {
-			vkDestroyPipelineLayout( device, layout, ivk_Allocator );
+		if ( !IsValid( device ) || !IsValid( layout ) )
+			return;
 
-			layout = VK_NULL_HANDLE;
-		}
+		vkDestroyPipelineLayout( device, layout, ivk_Allocator );
+
+		layout = VK_NULL_HANDLE;
 	}
 
 	VkResult CreateDescriptorPool(
@@ -373,17 +484,18 @@ namespace vk {
 		const VkDescriptorPoolCreateInfo& specification,
 		VkDescriptorPool& descriptor_pool
 	) {
-		mvk_assertm( IsValid( device ), "Vulkan Device must be valid to use this function" );
+		micro_assert( IsValid( device ), "Vulkan Device must be valid to use this function" );
 
 		return vkCreateDescriptorPool( device, micro_ptr( specification ), ivk_Allocator, micro_ptr( descriptor_pool ) );
 	}
 
 	void DestroyDescriptorPool( const VkDevice& device, VkDescriptorPool& descriptor_pool ) {
-		if ( IsValid( device ) && IsValid( descriptor_pool ) ) {
-			vkDestroyDescriptorPool( device, descriptor_pool, ivk_Allocator );
+		if ( !IsValid( device ) || !IsValid( descriptor_pool ) )
+			return;
 
-			descriptor_pool = VK_NULL_HANDLE;
-		}
+		vkDestroyDescriptorPool( device, descriptor_pool, ivk_Allocator );
+
+		descriptor_pool = VK_NULL_HANDLE;
 	}
 
 	VkResult AllocateDescriptors(
@@ -391,7 +503,7 @@ namespace vk {
 		const VkDescriptorSetAllocateInfo& specification,
 		std::vector<VkDescriptorSet>& descriptor_list
 	) {
-		mvk_assertm( IsValid( device ), "Vulkan Device must be valid to use this function" );
+		micro_assert( IsValid( device ), "Vulkan Device must be valid to use this function" );
 
 		descriptor_list.resize( (size_t)specification.descriptorSetCount );
 
@@ -403,7 +515,7 @@ namespace vk {
 		const std::vector<VkWriteDescriptorSet>& writes,
 		const std::vector<VkCopyDescriptorSet>& copies
 	) {
-		mvk_assertm( IsValid( device ), "Vulkan Device must be valid to use this function" );
+		micro_assert( IsValid( device ), "Vulkan Device must be valid to use this function" );
 
 		const auto* write_data = writes.data( );
 		const auto* copy_data  = copies.data( );
@@ -413,18 +525,19 @@ namespace vk {
 		vkUpdateDescriptorSets( device, write_count, write_data, copy_count, copy_data );
 	}
 
-	void DeallocateDescriptors( 
+	void DeallocateDescriptors(
 		const VkDevice& device,
 		const VkDescriptorPool& descriptor_pool,
-		std::vector<VkDescriptorSet>& descriptor_list 
+		std::vector<VkDescriptorSet>& descriptor_list
 	) {
-		if ( IsValid( device ) && IsValid( descriptor_pool ) ) {
-			const auto* list_data = descriptor_list.data( );
-			auto descriptor_count = (uint32_t)descriptor_list.size( );
+		if ( !IsValid( device ) || !IsValid( descriptor_pool ) )
+			return;
 
-			if ( descriptor_count > 0 )
-				vkFreeDescriptorSets( device, descriptor_pool, descriptor_count, list_data );
-		}
+		const auto* list_data = descriptor_list.data( );
+		auto descriptor_count = (uint32_t)descriptor_list.size( );
+
+		if ( descriptor_count > 0 )
+			vkFreeDescriptorSets( device, descriptor_pool, descriptor_count, list_data );
 	}
 
 	VkResult CreateShader(
@@ -432,17 +545,18 @@ namespace vk {
 		const VkShaderModuleCreateInfo& specification,
 		VkShaderModule& shader
 	) {
-		mvk_assertm( IsValid( device ), "Vulkan Device must be valid to use this function" );
+		micro_assert( IsValid( device ), "Vulkan Device must be valid to use this function" );
 
 		return vkCreateShaderModule( device, micro_ptr( specification ), ivk_Allocator, micro_ptr( shader ) );
 	}
 
 	void DestroyShader( const VkDevice& device, VkShaderModule& shader ) {
-		if ( IsValid( device ) && IsValid( shader ) ) {
-			vkDestroyShaderModule( device, shader, ivk_Allocator );
+		if ( !IsValid( device ) || !IsValid( shader ) )
+			return;
 
-			shader = VK_NULL_HANDLE;
-		}
+		vkDestroyShaderModule( device, shader, ivk_Allocator );
+
+		shader = VK_NULL_HANDLE;
 	}
 
 	VkResult CreatePipeline(
@@ -451,7 +565,7 @@ namespace vk {
 		const VkGraphicsPipelineCreateInfo& specification,
 		VkPipeline& pipeline
 	) {
-		mvk_assertm( IsValid( device ), "Vulkan Device must be valid to use this function" );
+		micro_assert( IsValid( device ), "Vulkan Device must be valid to use this function" );
 
 		return vkCreateGraphicsPipelines( device, cache, 1, micro_ptr( specification ), ivk_Allocator, micro_ptr( pipeline ) );
 	}
@@ -462,17 +576,18 @@ namespace vk {
 		const VkComputePipelineCreateInfo& specification,
 		VkPipeline& pipeline
 	) {
-		mvk_assertm( IsValid( device ), "Vulkan Device must be valid to use this function" );
+		micro_assert( IsValid( device ), "Vulkan Device must be valid to use this function" );
 
 		return vkCreateComputePipelines( device, cache, 1, micro_ptr( specification ), ivk_Allocator, micro_ptr( pipeline ) );
 	}
 
 	void DestroyPipeline( const VkDevice& device, VkPipeline& pipeline ) {
-		if ( IsValid( device ) && IsValid( pipeline ) ) {
-			vkDestroyPipeline( device, pipeline, ivk_Allocator );
+		if ( !IsValid( device ) || !IsValid( pipeline ) )
+			return;
 
-			pipeline = VK_NULL_HANDLE;
-		}
+		vkDestroyPipeline( device, pipeline, ivk_Allocator );
+
+		pipeline = VK_NULL_HANDLE;
 	}
 
 	VkResult CreateQueryPool(
@@ -480,17 +595,18 @@ namespace vk {
 		const VkQueryPoolCreateInfo& specification,
 		VkQueryPool& query_pool
 	) {
-		mvk_assertm( IsValid( device ), "Vulkan Device must be valid to use this function" );
+		micro_assert( IsValid( device ), "Vulkan Device must be valid to use this function" );
 
 		return vkCreateQueryPool( device, micro_ptr( specification ), ivk_Allocator, micro_ptr( query_pool ) );
 	}
 
 	void DestroyQueryPool( const VkDevice& device, VkQueryPool& query_pool ) {
-		if ( IsValid( device ) && IsValid( query_pool ) ) {
-			vkDestroyQueryPool( device, query_pool, ivk_Allocator );
+		if ( !IsValid( device ) || !IsValid( query_pool ) )
+			return;
 
-			query_pool = VK_NULL_HANDLE;
-		}
+		vkDestroyQueryPool( device, query_pool, ivk_Allocator );
+
+		query_pool = VK_NULL_HANDLE;
 	}
 
 	VkResult WaitForFences(
@@ -498,8 +614,8 @@ namespace vk {
 		const VkFence& fence,
 		const uint64_t wait_time
 	) {
-		mvk_assertm( IsValid( device ), "Vulkan Device must be valid to use this function" );
-		mvk_assertm( IsValid( fence ), "Vulkan Fence must be valid to use this function" );
+		micro_assert( IsValid( device ), "Vulkan Device must be valid to use this function" );
+		micro_assert( IsValid( fence ), "Vulkan Fence must be valid to use this function" );
 
 		return vkWaitForFences( device, 1, micro_ptr( fence ), VK_TRUE, wait_time );
 	}
@@ -509,19 +625,20 @@ namespace vk {
 		const PipelineBarrier& specification,
 		const VkImageMemoryBarrier& barrier
 	) {
-		mvk_assertm( IsValid( commands ), "You can't execute command on an invalid command buffer" );
+		micro_assert( IsValid( commands ), "You can't execute command on an invalid command buffer" );
 
-		if ( IsValid( commands ) ) {
-			vkCmdPipelineBarrier(
-				commands,
-				specification.SrcStageMask,
-				specification.DstStageMask,
-				specification.DependencyFlags,
-				0, VK_NULL_HANDLE,
-				0, VK_NULL_HANDLE,
-				1, micro_ptr( barrier )
-			);
-		}
+		if ( !IsValid( commands ) )
+			return;
+
+		vkCmdPipelineBarrier(
+			commands,
+			specification.SrcStageMask,
+			specification.DstStageMask,
+			specification.DependencyFlags,
+			0, VK_NULL_HANDLE,
+			0, VK_NULL_HANDLE,
+			1, micro_ptr( barrier )
+		);
 	}
 
 	void CmdImageBarrier(
@@ -529,24 +646,25 @@ namespace vk {
 		const PipelineBarrier& specification,
 		const std::vector<VkImageMemoryBarrier>& barriers
 	) {
-		mvk_assertm( IsValid( commands ), "You can't execute command on an invalid command buffer" );
+		micro_assert( IsValid( commands ), "You can't execute command on an invalid command buffer" );
 
-		if ( IsValid( commands ) ) {
-			auto barrier_count = (uint32_t)barriers.size( );
+		if ( !IsValid( commands ) )
+			return;
 
-			if ( barrier_count > 0 ) {
-				const auto* barrier_data = barriers.data( );
+		auto barrier_count = (uint32_t)barriers.size( );
 
-				vkCmdPipelineBarrier(
-					commands,
-					specification.SrcStageMask,
-					specification.DstStageMask,
-					specification.DependencyFlags,
-					0, VK_NULL_HANDLE,
-					0, VK_NULL_HANDLE,
-					barrier_count, barrier_data
-				);
-			}
+		if ( barrier_count > 0 ) {
+			const auto* barrier_data = barriers.data( );
+
+			vkCmdPipelineBarrier(
+				commands,
+				specification.SrcStageMask,
+				specification.DstStageMask,
+				specification.DependencyFlags,
+				0, VK_NULL_HANDLE,
+				0, VK_NULL_HANDLE,
+				barrier_count, barrier_data
+			);
 		}
 	}
 
@@ -555,19 +673,20 @@ namespace vk {
 		const PipelineBarrier& specification,
 		const VkBufferMemoryBarrier& barrier
 	) {
-		mvk_assertm( IsValid( commands ), "You can't execute command on an invalid command buffer" );
+		micro_assert( IsValid( commands ), "You can't execute command on an invalid command buffer" );
 
-		if ( IsValid( commands ) ) {
-			vkCmdPipelineBarrier(
-				commands,
-				specification.SrcStageMask,
-				specification.DstStageMask,
-				specification.DependencyFlags,
-				0, VK_NULL_HANDLE,
-				1, micro_ptr( barrier ),
-				0, VK_NULL_HANDLE
-			);
-		}
+		if ( !IsValid( commands ) )
+			return;
+
+		vkCmdPipelineBarrier(
+			commands,
+			specification.SrcStageMask,
+			specification.DstStageMask,
+			specification.DependencyFlags,
+			0, VK_NULL_HANDLE,
+			1, micro_ptr( barrier ),
+			0, VK_NULL_HANDLE
+		);
 	}
 
 	void CmdBufferBarrier(
@@ -575,24 +694,25 @@ namespace vk {
 		const PipelineBarrier& specification,
 		const std::vector<VkBufferMemoryBarrier>& barriers
 	) {
-		mvk_assertm( IsValid( commands ), "You can't execute command on an invalid command buffer" );
+		micro_assert( IsValid( commands ), "You can't execute command on an invalid command buffer" );
 
-		if ( IsValid( commands ) ) {
-			auto barrier_count = (uint32_t)barriers.size( );
+		if ( !IsValid( commands ) )
+			return;
+		
+		auto barrier_count = (uint32_t)barriers.size( );
 
-			if ( barrier_count > 0 ) {
-				const auto* barrier_data = barriers.data( );
+		if ( barrier_count > 0 ) {
+			const auto* barrier_data = barriers.data( );
 
-				vkCmdPipelineBarrier(
-					commands,
-					specification.SrcStageMask,
-					specification.DstStageMask,
-					specification.DependencyFlags,
-					0, VK_NULL_HANDLE,
-					barrier_count, barrier_data,
-					0, VK_NULL_HANDLE
-				);
-			}
+			vkCmdPipelineBarrier(
+				commands,
+				specification.SrcStageMask,
+				specification.DstStageMask,
+				specification.DependencyFlags,
+				0, VK_NULL_HANDLE,
+				barrier_count, barrier_data,
+				0, VK_NULL_HANDLE
+			);
 		}
 	}
 
@@ -600,7 +720,7 @@ namespace vk {
 		const VkCommandBuffer& commands,
 		const VkViewport& viewport
 	) {
-		mvk_assertm( IsValid( commands ), "You can't execute command on an invalid command buffer" );
+		micro_assert( IsValid( commands ), "You can't execute command on an invalid command buffer" );
 
 		vkCmdSetViewport( commands, 0, 1, micro_ptr( viewport ) );
 	}
@@ -610,7 +730,7 @@ namespace vk {
 		const uint32_t start_id,
 		const std::vector<VkViewport>& viewports
 	) {
-		mvk_assertm( IsValid( commands ), "You can't execute command on an invalid command buffer" );
+		micro_assert( IsValid( commands ), "You can't execute command on an invalid command buffer" );
 
 		const auto* viewport_data = viewports.data( );
 		auto viewport_count		  = (uint32_t)viewports.size( );
@@ -623,7 +743,7 @@ namespace vk {
 		const VkCommandBuffer& commands,
 		const VkRect2D& scissor
 	) {
-		mvk_assertm( IsValid( commands ), "You can't execute command on an invalid command buffer" );
+		micro_assert( IsValid( commands ), "You can't execute command on an invalid command buffer" );
 
 		vkCmdSetScissor( commands, 0, 1, micro_ptr( scissor ) );
 	}
@@ -633,7 +753,7 @@ namespace vk {
 		const uint32_t start_id,
 		const std::vector<VkRect2D>& scissors
 	) {
-		mvk_assertm( IsValid( commands ), "You can't execute command on an invalid command buffer" );
+		micro_assert( IsValid( commands ), "You can't execute command on an invalid command buffer" );
 
 		const auto* scissor_data = scissors.data( );
 		auto scissor_count = (uint32_t)scissors.size( );
@@ -649,7 +769,7 @@ namespace vk {
 		const uint32_t start_id,
 		const std::vector<VkDescriptorSet>& descriptor_sets
 	) {
-		mvk_assertm( IsValid( commands ), "You can't execute command on an invalid command buffer" );
+		micro_assert( IsValid( commands ), "You can't execute command on an invalid command buffer" );
 
 		const auto* descriptor_data = descriptor_sets.data( );
 		auto descriptor_count		= (uint32_t)descriptor_sets.size( );
@@ -666,7 +786,7 @@ namespace vk {
 		const std::vector<VkDescriptorSet>& descriptor_sets,
 		const std::vector<uint32_t> dymanic_offsets
 	) {
-		mvk_assertm( IsValid( commands ), "You can't execute command on an invalid command buffer" );
+		micro_assert( IsValid( commands ), "You can't execute command on an invalid command buffer" );
 		
 		const auto* descriptor_data = descriptor_sets.data( );
 		const auto* offset_data		= dymanic_offsets.data( );
@@ -714,7 +834,7 @@ namespace vk {
 		const uint32_t start_id,
 		const std::vector<BufferBindSpecification>& buffer_binds
 	) {
-		mvk_assertm( IsValid( commands ), "You can't execute command on an invalid command buffer" );
+		micro_assert( IsValid( commands ), "You can't execute command on an invalid command buffer" );
 
 		auto buffers			= EnumerateBuffers( buffer_binds );
 		auto offsets			= EnumerateBufferOffsets( buffer_binds );
@@ -739,7 +859,7 @@ namespace vk {
 	}
 
 	void EnumeratePhysicalDevices( const VkInstance& instance, std::vector<VkPhysicalDevice>& physical_list ) {
-		mvk_assertm( IsValid( instance ), "Vulkan Instance must be valid to use this function" );
+		micro_assert( IsValid( instance ), "Vulkan Instance must be valid to use this function" );
 
 		auto list_size = (uint32_t)0;
 
@@ -753,7 +873,7 @@ namespace vk {
 	}
 
 	void EnumeratePhysicalExtension( const VkPhysicalDevice& physical, std::vector<VkExtensionProperties>& extension_list ) {
-		mvk_assertm( IsValid( physical ), "Vulkan Physical Device must be valid to use this function" );
+		micro_assert( IsValid( physical ), "Vulkan Physical Device must be valid to use this function" );
 
 		auto list_size = (uint32_t)0;
 
@@ -767,7 +887,7 @@ namespace vk {
 	}
 
 	void EnumeratePhysicalQueueFamilies( const VkPhysicalDevice& physical, std::vector<VkQueueFamilyProperties>& queue_list ) {
-		mvk_assertm( IsValid( physical ), "Vulkan Physical Device must be valid to use this function" );
+		micro_assert( IsValid( physical ), "Vulkan Physical Device must be valid to use this function" );
 
 		auto list_size = (uint32_t)0;
 		
@@ -785,8 +905,8 @@ namespace vk {
 		const VkSurfaceKHR& surface,
 		std::vector<VkSurfaceFormatKHR>& format_list
 	) {
-		mvk_assertm( IsValid( physical ), "Vulkan Physical Device must be valid to use this function" );
-		mvk_assertm( IsValid( surface ), "Vulkan Surface must be valid to use this function" );
+		micro_assert( IsValid( physical ), "Vulkan Physical Device must be valid to use this function" );
+		micro_assert( IsValid( surface ), "Vulkan Surface must be valid to use this function" );
 
 		auto list_size = (uint32_t)0;
 
@@ -804,8 +924,8 @@ namespace vk {
 		const VkSurfaceKHR& surface,
 		std::vector<VkPresentModeKHR>& present_modes
 	) {
-		mvk_assertm( IsValid( physical ), "Vulkan Physical Device must be valid to use this function" );
-		mvk_assertm( IsValid( surface ), "Vulkan Surface must be valid to use this function" );
+		micro_assert( IsValid( physical ), "Vulkan Physical Device must be valid to use this function" );
+		micro_assert( IsValid( surface ), "Vulkan Surface must be valid to use this function" );
 
 		auto list_size = (uint32_t)0;
 
@@ -823,8 +943,8 @@ namespace vk {
 		const VkSwapchainKHR& swapchain,
 		std::vector<VkImage>& image_list
 	) {
-		mvk_assertm( IsValid( device ), "Vulkan Device must be valid to use this function" );
-		mvk_assertm( IsValid( swapchain ), "Vulkan Swapchain must be valid to use this function" );
+		micro_assert( IsValid( device ), "Vulkan Device must be valid to use this function" );
+		micro_assert( IsValid( swapchain ), "Vulkan Swapchain must be valid to use this function" );
 
 		auto list_size = (uint32_t)0;
 
@@ -962,8 +1082,8 @@ namespace vk {
 		const VkSurfaceKHR& surface,
 		DeviceSpecification& specification
 	) {
-		mvk_assertm( IsValid( physical ), "Vulkan Physical Device must be valid to use this function" );
-		mvk_assertm( IsValid( surface ), "Vulkan Surface must be valid to use this function" );
+		micro_assert( IsValid( physical ), "Vulkan Physical Device must be valid to use this function" );
+		micro_assert( IsValid( surface ), "Vulkan Surface must be valid to use this function" );
 
 		vkGetPhysicalDeviceProperties( physical, micro_ptr( specification.Properties ) );
 		vkGetPhysicalDeviceFeatures( physical, micro_ptr( specification.Features ) );
