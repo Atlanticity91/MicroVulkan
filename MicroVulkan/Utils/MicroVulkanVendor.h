@@ -35,6 +35,8 @@
 
 #define VK_UNUSED_FLAG 0
 
+typedef VkRect2D VkScissor;
+
 /**
  * vk namespace
  * @note : Used to store Vulkan wrapper function and extended types.
@@ -47,7 +49,7 @@ namespace vk {
 	 * @template VkType : Object type.
 	 **/
 	template<typename VkType>
-	concept IsVkObject = std::is_pointer<VkType>::value;
+	concept IsVkObject = std::is_pointer_v<VkType>;
 
 	/**
 	 * QueueTypes enum
@@ -519,7 +521,7 @@ namespace vk {
 		const VkInstance& instance, 
 		micro_string procedure 
 	) {
-		return (VkFunction)vkGetInstanceProcAddr( instance, procedure );
+		return micro_cast( vkGetInstanceProcAddr( instance, procedure ), VkFunction );
 	};
 
 };
