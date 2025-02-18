@@ -12,12 +12,12 @@ project "MicroVulkan"
 	--- GLOBAL INCLUDES
 	includedirs {
 		"%{IncludeDirs.MicroVulkan}",
-		"%{IncludeDirs.vulkan}"
+		"%{IncludeDirs.vulkan}Include/"
 	}
 	
 	externalincludedirs {
 		"%{IncludeDirs.MicroVulkan}",
-		"%{IncludeDirs.Vulkan}"
+		"%{IncludeDirs.Vulkan}Include/"
 	}
 
 	--- PRECOMPILED HEADER

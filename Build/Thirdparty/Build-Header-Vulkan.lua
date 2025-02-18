@@ -10,8 +10,8 @@ project "Vulkan"
 
 	--- GLOBAL SOURCE FILES
 	files { 
-		"%{IncludeDirs.Vulkan}/vulkan/**.h",
-		"%{IncludeDirs.Vulkan}/vulkan/**.hpp"
+		"%{IncludeDirs.Vulkan}Include/vulkan/**.h",
+		"%{IncludeDirs.Vulkan}Include/vulkan/**.hpp"
 	}
 
 	--- LINUX

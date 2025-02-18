@@ -148,7 +148,7 @@ namespace vk {
 	 * @param instance : Reference to Vulkan instance variable.
 	 * @return : VkResult value of the call.
 	 **/
-	VkResult CreateInstance(
+	MICRO_API VkResult CreateInstance(
 		const VkInstanceCreateInfo& specification,
 		VkInstance& instance
 	);
@@ -158,250 +158,250 @@ namespace vk {
 	 * @note : Wrapper for Vulkan instance destruction
 	 * @param instance : Reference to Vulkan instance variable.
 	 **/
-	void DestroyInstance( VkInstance& instance );
+	MICRO_API void DestroyInstance( VkInstance& instance );
 
-	VkResult CreateDebugMessenger(
+	MICRO_API VkResult CreateDebugMessenger(
 		const VkInstance& instance,
 		const VkDebugUtilsMessengerCreateInfoEXT& specification,
 		VkDebugUtilsMessengerEXT& messenger
 	);
 
-	void DestroyDebugMessenger(
+	MICRO_API void DestroyDebugMessenger(
 		const VkInstance& instance,
 		VkDebugUtilsMessengerEXT& messenger
 	);
 
-	void DestroySurface( VkInstance& instance, VkSurfaceKHR& surface );
+	MICRO_API void DestroySurface( VkInstance& instance, VkSurfaceKHR& surface );
 
-	VkResult CreateDevice(
+	MICRO_API VkResult CreateDevice(
 		const VkPhysicalDevice physical,
 		const VkDeviceCreateInfo& specification,
 		VkDevice& device
 	);
 
-	void DeviceWait( const VkDevice& device );
+	MICRO_API void DeviceWait( const VkDevice& device );
 
-	void DestroyDevice( VkDevice& device );
+	MICRO_API void DestroyDevice( VkDevice& device );
 
-	VkResult CreateSwapchain(
+	MICRO_API VkResult CreateSwapchain(
 		const VkDevice& device,
 		const VkSwapchainCreateInfoKHR& specification,
 		VkSwapchainKHR& swapchain
 	);
 
-	void DestroySwapchain( const VkDevice& device, VkSwapchainKHR& swapchain );
+	MICRO_API void DestroySwapchain( const VkDevice& device, VkSwapchainKHR& swapchain );
 
-	VkResult CreateRenderPass(
+	MICRO_API VkResult CreateRenderPass(
 		const VkDevice& device,
 		const VkRenderPassCreateInfo& specification,
 		VkRenderPass& render_pass
 	);
 
-	void DestroyRenderPass( const VkDevice& device, VkRenderPass& render_pass );
+	MICRO_API void DestroyRenderPass( const VkDevice& device, VkRenderPass& render_pass );
 
-	VkResult AllocateMemory(
+	MICRO_API VkResult AllocateMemory(
 		const VkDevice& device,
 		const VkMemoryAllocateInfo& specification,
 		VkDeviceMemory& memory
 	);
 
-	void DeallocateMemory( const VkDevice& device, VkDeviceMemory& memory );
+	MICRO_API void DeallocateMemory( const VkDevice& device, VkDeviceMemory& memory );
 
-	VkResult CreateImage(
+	MICRO_API VkResult CreateImage(
 		const VkDevice& device,
 		const VkImageCreateInfo& specification,
 		VkImage& image
 	);
 
-	void DestroyImage( const VkDevice& device, VkImage& image );
+	MICRO_API void DestroyImage( const VkDevice& device, VkImage& image );
 
-	VkResult CreateImageView(
+	MICRO_API VkResult CreateImageView(
 		const VkDevice& device,
 		const VkImageViewCreateInfo& specification,
 		VkImageView& image_view
 	);
 
-	void DestroyImageView( const VkDevice& device, VkImageView& image_view );
+	MICRO_API void DestroyImageView( const VkDevice& device, VkImageView& image_view );
 
-	VkResult CreateImageSampler(
+	MICRO_API VkResult CreateImageSampler(
 		const VkDevice& device,
 		const VkSamplerCreateInfo& specification,
 		VkSampler& sampler
 	);
 
-	void DestroyImageSampler( const VkDevice& device, VkSampler& sampler );
+	MICRO_API void DestroyImageSampler( const VkDevice& device, VkSampler& sampler );
 
-	VkResult CreateFramebuffer(
+	MICRO_API VkResult CreateFramebuffer(
 		const VkDevice& device,
 		const VkFramebufferCreateInfo& specification,
 		VkFramebuffer& framebuffer
 	);
 
-	void DestroyFramebuffer( const VkDevice& device, VkFramebuffer& framebuffer );
+	MICRO_API void DestroyFramebuffer( const VkDevice& device, VkFramebuffer& framebuffer );
 
-	VkResult CreateSemaphore(
+	MICRO_API VkResult CreateSemaphore(
 		const VkDevice& device,
 		const VkSemaphoreCreateInfo& specification,
 		VkSemaphore& semaphore
 	);
 
-	void DestroySemaphore( const VkDevice& device, VkSemaphore& semaphore );
+	MICRO_API void DestroySemaphore( const VkDevice& device, VkSemaphore& semaphore );
 
-	VkResult CreateFence(
+	MICRO_API VkResult CreateFence(
 		const VkDevice& device,
 		const VkFenceCreateInfo& specification,
 		VkFence& fence
 	);
 
-	void DestroyFence( const VkDevice& device, VkFence& fence );
+	MICRO_API void DestroyFence( const VkDevice& device, VkFence& fence );
 
-	VkResult CreateCommandPool(
+	MICRO_API VkResult CreateCommandPool(
 		const VkDevice& device,
 		const VkCommandPoolCreateInfo& specification,
 		VkCommandPool& pool
 	);
 
-	void DestroyCommandPool( const VkDevice& device, VkCommandPool& pool );
+	MICRO_API void DestroyCommandPool( const VkDevice& device, VkCommandPool& pool );
 
-	VkResult CreateBuffer( 
+	MICRO_API VkResult CreateBuffer(
 		const VkDevice& device,
 		const VkBufferCreateInfo& specification,
 		VkBuffer& buffer
 	);
 
-	void DestroyBuffer( const VkDevice& device, VkBuffer& buffer );
+	MICRO_API void DestroyBuffer( const VkDevice& device, VkBuffer& buffer );
 
-	VkResult CreatePipelineCache(
+	MICRO_API VkResult CreatePipelineCache(
 		const VkDevice& device,
 		const VkPipelineCacheCreateInfo& specification,
 		VkPipelineCache& pipeline_cache
 	);
 
-	void DestroyPipelineCache( const VkDevice& device, 
+	MICRO_API void DestroyPipelineCache( const VkDevice& device,
 							   VkPipelineCache& pipeline_cache );
 
-	VkResult CreatePipelineLayout(
+	MICRO_API VkResult CreatePipelineLayout(
 		const VkDevice& device,
 		const VkPipelineLayoutCreateInfo& specification,
 		VkPipelineLayout& layout
 	);
 
-	void DestroyPipelineLayout( const VkDevice& device, VkPipelineLayout& layout );
+	MICRO_API void DestroyPipelineLayout( const VkDevice& device, VkPipelineLayout& layout );
 
-	VkResult CreateDescriptorPool( 
+	MICRO_API VkResult CreateDescriptorPool(
 		const VkDevice& device,
 		const VkDescriptorPoolCreateInfo& specification,
 		VkDescriptorPool& descriptor_pool
 	);
 
-	void DestroyDescriptorPool( 
+	MICRO_API void DestroyDescriptorPool(
 		const VkDevice& device, 
 		VkDescriptorPool& descriptor_pool 
 	);
 
-	VkResult AllocateDescriptors(
+	MICRO_API VkResult AllocateDescriptors(
 		const VkDevice& device,
 		const VkDescriptorSetAllocateInfo& specification,
 		std::vector<VkDescriptorSet>& descriptor_list
 	);
 
-	void UpdateDescriptorSets(
+	MICRO_API void UpdateDescriptorSets(
 		const VkDevice& device,
 		const std::vector<VkWriteDescriptorSet>& writes,
 		const std::vector<VkCopyDescriptorSet>& copies
 	);
 
-	void DeallocateDescriptors(
+	MICRO_API void DeallocateDescriptors(
 		const VkDevice& device, 
 		const VkDescriptorPool& descriptor_pool, 
 		std::vector<VkDescriptorSet>& descriptor_list 
 	);
 
-	VkResult CreateShader(
+	MICRO_API VkResult CreateShader(
 		const VkDevice& device,
 		const VkShaderModuleCreateInfo& specification,
 		VkShaderModule& shader
 	);
 
-	void DestroyShader( const VkDevice& device, VkShaderModule& shader );
+	MICRO_API void DestroyShader( const VkDevice& device, VkShaderModule& shader );
 
-	VkResult CreatePipeline(
+	MICRO_API VkResult CreatePipeline(
 		const VkDevice& device,
 		const VkPipelineCache& cache,
 		const VkGraphicsPipelineCreateInfo& specification,
 		VkPipeline& pipeline
 	);
 
-	VkResult CreatePipeline(
+	MICRO_API VkResult CreatePipeline(
 		const VkDevice& device,
 		const VkPipelineCache& cache,
 		const VkComputePipelineCreateInfo& specification,
 		VkPipeline& pipeline
 	);
 
-	void DestroyPipeline( const VkDevice& device, VkPipeline& pipeline );
+	MICRO_API void DestroyPipeline( const VkDevice& device, VkPipeline& pipeline );
 
-	VkResult CreateQueryPool(
+	MICRO_API VkResult CreateQueryPool(
 		const VkDevice& device,
 		const VkQueryPoolCreateInfo& specification,
 		VkQueryPool& query_pool
 	);
 
-	void DestroyQueryPool( const VkDevice& device, VkQueryPool& query_pool );
+	MICRO_API void DestroyQueryPool( const VkDevice& device, VkQueryPool& query_pool );
 
-	VkResult WaitForFences( 
+	MICRO_API VkResult WaitForFences(
 		const VkDevice& device,
 		const VkFence& fence,
 		const uint64_t wait_time
 	);
 
-	void CmdImageBarrier(
+	MICRO_API void CmdImageBarrier(
 		const VkCommandBuffer& commands,
 		const PipelineBarrier& specification,
 		const VkImageMemoryBarrier& barrier
 	);
 
-	void CmdImageBarrier(
+	MICRO_API void CmdImageBarrier(
 		const VkCommandBuffer& commands,
 		const PipelineBarrier& specification,
 		const std::vector<VkImageMemoryBarrier>& barriers
 	);
 
-	void CmdBufferBarrier(
+	MICRO_API void CmdBufferBarrier(
 		const VkCommandBuffer& commands,
 		const PipelineBarrier& specification,
 		const VkBufferMemoryBarrier& barrier
 	);
 
-	void CmdBufferBarrier(
+	MICRO_API void CmdBufferBarrier(
 		const VkCommandBuffer& commands,
 		const PipelineBarrier& specification,
 		const std::vector<VkBufferMemoryBarrier>& barriers
 	);
 
-	void CmdSetViewport(
+	MICRO_API void CmdSetViewport(
 		const VkCommandBuffer& commands,
 		const VkViewport& viewport
 	);
 
-	void CmdSetViewport(
+	MICRO_API void CmdSetViewport(
 		const VkCommandBuffer& commands,
 		const uint32_t start_id,
 		const std::vector<VkViewport>& viewports
 	);
 
-	void CmdSetScissor(
+	MICRO_API void CmdSetScissor(
 		const VkCommandBuffer& commands,
-		const VkRect2D& scissor
+		const VkScissor& scissor
 	);
 
-	void CmdSetScissor( 
+	MICRO_API void CmdSetScissor(
 		const VkCommandBuffer& commands,
 		const uint32_t start_id,
-		const std::vector<VkRect2D>& scissors
+		const std::vector<VkScissor>& scissors
 	);
 
-	void CmdBindDescriptorSets(
+	MICRO_API void CmdBindDescriptorSets(
 		const VkCommandBuffer& commands,
 		const VkPipelineBindPoint bind_point,
 		const VkPipelineLayout& layout,
@@ -409,7 +409,7 @@ namespace vk {
 		const std::vector<VkDescriptorSet>& descriptor_sets
 	);
 
-	void CmdBindDescriptorSets(
+	MICRO_API void CmdBindDescriptorSets(
 		const VkCommandBuffer& commands,
 		const VkPipelineBindPoint bind_point,
 		const VkPipelineLayout& layout,
@@ -418,27 +418,27 @@ namespace vk {
 		const std::vector<uint32_t> dymanic_offsets
 	);
 
-	void CmdBindVertexBuffers( 
+	MICRO_API void CmdBindVertexBuffers(
 		const VkCommandBuffer& commands,
 		const uint32_t start_id,
 		const std::vector<BufferBindSpecification>& buffer_binds
 	);
 
-	void EnumerateInstanceExtension( 
+	MICRO_API void EnumerateInstanceExtension(
 		std::vector<VkExtensionProperties>& extension_list 
 	);
 
-	void EnumeratePhysicalDevices( 
+	MICRO_API void EnumeratePhysicalDevices(
 		const VkInstance& instance, 
 		std::vector<VkPhysicalDevice>& physical_list
 	);
 
-	void EnumeratePhysicalExtension( 
+	MICRO_API void EnumeratePhysicalExtension(
 		const VkPhysicalDevice& physical, 
 		std::vector<VkExtensionProperties>& extensions 
 	);
 
-	void EnumeratePhysicalQueueFamilies( 
+	MICRO_API void EnumeratePhysicalQueueFamilies(
 		const VkPhysicalDevice& physical, 
 		std::vector<VkQueueFamilyProperties>& queue_list 
 	);
@@ -450,7 +450,7 @@ namespace vk {
 	 * @param surface : Reference to current Vulkan surface instance.
 	 * @param format_list : Reference to surface format vector.
 	 **/
-	void EnumerateSwapchainFormats(
+	MICRO_API void EnumerateSwapchainFormats(
 		const VkPhysicalDevice& physical,
 		const VkSurfaceKHR& surface,
 		std::vector<VkSurfaceFormatKHR>& format_list
@@ -463,7 +463,7 @@ namespace vk {
 	 * @param surface : Reference to current Vulkan surface instance.
 	 * @param present_modes : Reference to Vukan present mode vector.
 	 **/
-	void EnumerateSwapchainPresentModes(
+	MICRO_API void EnumerateSwapchainPresentModes(
 		const VkPhysicalDevice& physical,
 		const VkSurfaceKHR& surface,
 		std::vector<VkPresentModeKHR>& present_modes
@@ -476,7 +476,7 @@ namespace vk {
 	 * @param swapchain : Reference to current Vulkan swapchain instance.
 	 * @param image_list : Reference to swapchain image vector.
 	 **/
-	void EnumerateSwapchainImages(
+	MICRO_API void EnumerateSwapchainImages(
 		const VkDevice& device,
 		const VkSwapchainKHR& swapchain,
 		std::vector<VkImage>& image_list
@@ -489,7 +489,7 @@ namespace vk {
 	 * @param surface : Reference to current Vulkan surface instance.
 	 * @param specification : Reference to physical device variable. 
 	 **/
-	void GetPhysicalSpecification( 
+	MICRO_API void GetPhysicalSpecification(
 		const VkPhysicalDevice& physical,
 		const VkSurfaceKHR& surface,
 		DeviceSpecification& specification 
@@ -503,7 +503,7 @@ namespace vk {
 	 * @param cache_data : Reference to pipeline cache byte vector.
 	 * @return : VkResult value of the call.
 	 **/
-	VkResult GetPipelineCacheData(
+	MICRO_API VkResult GetPipelineCacheData(
 		const VkDevice& device,
 		const VkPipelineCache& pipeline_cache,
 		std::vector<uint8_t>& cache_data

@@ -741,7 +741,7 @@ namespace vk {
 
 	void CmdSetScissor(
 		const VkCommandBuffer& commands,
-		const VkRect2D& scissor
+		const VkScissor& scissor
 	) {
 		micro_assert( IsValid( commands ), "You can't execute command on an invalid command buffer" );
 
@@ -751,7 +751,7 @@ namespace vk {
 	void CmdSetScissor(
 		const VkCommandBuffer& commands,
 		const uint32_t start_id,
-		const std::vector<VkRect2D>& scissors
+		const std::vector<VkScissor>& scissors
 	) {
 		micro_assert( IsValid( commands ), "You can't execute command on an invalid command buffer" );
 

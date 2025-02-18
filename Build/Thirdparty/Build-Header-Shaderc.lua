@@ -10,8 +10,8 @@ project "Shaderc"
 
 	--- GLOBAL SOURCE FILES
 	files { 
-		"%{IncludeDirs.Vulkan}/shaderc/**.h",
-		"%{IncludeDirs.Vulkan}/shaderc/**.hpp"
+		"%{IncludeDirs.Vulkan}Include/shaderc/**.h",
+		"%{IncludeDirs.Vulkan}Include/shaderc/**.hpp"
 	}
 
 	--- WINDOWS

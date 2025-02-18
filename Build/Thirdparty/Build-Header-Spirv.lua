@@ -10,8 +10,8 @@ project "Spirv"
 
 	--- GLOBAL SOURCE FILES
 	files { 
-		"%{IncludeDirs.Vulkan}/spirv-headers/**.h",
-		"%{IncludeDirs.Vulkan}/spirv-headers/**.hpp"
+		"%{IncludeDirs.Vulkan}Include/spirv-headers/**.h",
+		"%{IncludeDirs.Vulkan}Include/spirv-headers/**.hpp"
 	}
 
 	--- WINDOWS

@@ -71,7 +71,7 @@ bool MicroVulkanRenderContext::CmdBeginRenderPass(
 	const VkRenderPassBeginInfo& render_pass_info,
 	const VkSubpassContents command_policy
 ) {
-	auto state = vk::IsValid( render_pass_info.renderPass ) && vk::IsValid( render_pass_info.framebuffer );
+	const auto state = vk::IsValid( render_pass_info.renderPass ) && vk::IsValid( render_pass_info.framebuffer );
 
 	if ( state && CommandBuffer.GetIsValid( ) )
 		vkCmdBeginRenderPass( CommandBuffer, micro_ptr( render_pass_info ), command_policy );
@@ -79,20 +79,74 @@ bool MicroVulkanRenderContext::CmdBeginRenderPass(
 	return state;
 }
 
+bool MicroVulkanRenderContext::CmdBeginRenderPass(
+	const MicroVulkanRenderPassInfo& render_pass_info
+) {
+	return CmdBeginRenderPass( render_pass_info, VK_SUBPASS_CONTENTS_INLINE );
+}
+
+bool MicroVulkanRenderContext::CmdBeginRenderPass(
+	const MicroVulkanRenderPassInfo& render_pass_info,
+	const VkSubpassContents command_policy
+) {
+	const auto state = CmdBeginRenderPass( render_pass_info.BeginInfo, command_policy );
+
+	if ( state ) {
+		CmdSetViewport( render_pass_info.Viewport );
+		CmdSetScissor( render_pass_info.Scissor );
+	}
+
+	return state;
+}
+
+void MicroVulkanRenderContext::CmdSetViewport( const VkViewport& viewport ) {
+	vk::CmdSetViewport( CommandBuffer.Buffer, viewport );
+}
+
+void MicroVulkanRenderContext::CmdSetViewports( 
+	std::initializer_list<VkViewport> viewports 
+) {
+	vk::CmdSetViewport( CommandBuffer.Buffer, 0, viewports );
+}
+
+void MicroVulkanRenderContext::CmdSetViewports( 
+	const uint32_t start_id, 
+	const std::vector<VkViewport>& viewports
+) {
+	vk::CmdSetViewport( CommandBuffer.Buffer, start_id, viewports );
+}
+
+void MicroVulkanRenderContext::CmdSetScissor( const VkScissor& scissor ) {
+	vk::CmdSetScissor( CommandBuffer.Buffer, scissor );
+}
+
+void MicroVulkanRenderContext::CmdSetScissors( 
+	std::initializer_list<VkScissor> scissors 
+) {
+	vk::CmdSetScissor( CommandBuffer.Buffer, 0, scissors );
+}
+
+void MicroVulkanRenderContext::CmdSetScissors(
+	const uint32_t start_id,
+	const std::vector<VkScissor>& scissors 
+) {
+	vk::CmdSetScissor( CommandBuffer.Buffer, start_id, scissors );
+}
+
 void MicroVulkanRenderContext::CmdNextSubpass( ) {
 	CmdNextSubpass( VK_SUBPASS_CONTENTS_INLINE );
 }
 
-void MicroVulkanRenderContext::CmdExecute( 
-	const std::vector<VkCommandBuffer>& secondary_commands 
+void MicroVulkanRenderContext::CmdExecute(
+	const std::vector<VkCommandBuffer>& secondary_commands
 ) {
-	auto command_count = (uint32_t)secondary_commands.size( );
+	const auto* buffer_data = secondary_commands.data( );
+	auto command_count		= (uint32_t)secondary_commands.size( );
 
-	if ( command_count > 0 && CommandBuffer.GetIsValid( ) ) {
-		const auto* buffer_data = secondary_commands.data( );
+	if ( command_count == 0 || !CommandBuffer.GetIsValid( ) )
+		return;
 
-		vkCmdExecuteCommands( CommandBuffer, command_count, buffer_data );
-	}
+	vkCmdExecuteCommands( CommandBuffer, command_count, buffer_data );
 }
 
 void MicroVulkanRenderContext::CmdNextSubpass(

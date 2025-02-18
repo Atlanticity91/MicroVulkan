@@ -35,9 +35,14 @@
 #	include "MicroCore/MicroCore.h"
 #else
 #	include "MicroTraits.h"
-#	define micro_assert( exp, msg ) assert( ((void)msg, exp) )
+#	define micro_assert( ... ) 
+
+micro_struct micro_upoint {
+	uint32_t x;
+	uint32_t y;
+};
 #endif
 
-#include <vulkan/vulkan.h>
-#include <shaderc/shaderc.hpp>
-#include <spirv-headers/spirv.hpp>
+#include "vulkan/vulkan.h"
+#include "shaderc/shaderc.hpp"
+#include "spirv-headers/spirv.hpp"

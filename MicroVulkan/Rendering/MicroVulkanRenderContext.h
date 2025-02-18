@@ -54,6 +54,33 @@ micro_struct MicroVulkanRenderContext {
 		const VkSubpassContents command_policy
 	);
 
+	bool CmdBeginRenderPass(
+		const MicroVulkanRenderPassInfo& render_pass_info
+	);
+
+	bool CmdBeginRenderPass(
+		const MicroVulkanRenderPassInfo& render_pass_info,
+		const VkSubpassContents command_policy
+	);
+
+	void CmdSetViewport( const VkViewport& viewport );
+
+	void CmdSetViewports( std::initializer_list<VkViewport> viewports );
+
+	void CmdSetViewports( 
+		const uint32_t start_id,
+		const std::vector<VkViewport>& viewports 
+	);
+
+	void CmdSetScissor( const VkScissor& scissor );
+
+	void CmdSetScissors( std::initializer_list<VkScissor> scissors );
+
+	void CmdSetScissors( 
+		const uint32_t start_id, 
+		const std::vector<VkScissor>& scissors 
+	);
+
 	void CmdEndRenderPass( );
 
 	void CmdNextSubpass( );

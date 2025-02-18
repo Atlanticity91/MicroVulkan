@@ -18,5 +18,5 @@ OutputDirs[ "BinInt" ] = "%{wks.location}/bin-int/"
 --- INCLUDE DIRS
 IncludeDirs = { }
 
-IncludeDirs[ "Vulkan" ] = vulkan.."/".._OPTIONS[ "vk_version" ].."/Include/"
+IncludeDirs[ "Vulkan" ] = vulkan.."/".._OPTIONS[ "vk_version" ].."/"
 IncludeDirs[ "MicroVulkan"] = "%{wks.location}/MicroVulkan/"

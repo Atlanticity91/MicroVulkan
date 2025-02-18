@@ -251,6 +251,8 @@ extern "C" {
  **/
 #define micro_sizeof( TYPE ) ( (uint32_t)sizeof( TYPE ) )
 
+#define micro_array_size( ARRAY ) ( micro_sizeof( ARRAY ) / micro_sizeof( (ARRAY)[ 0 ] ) )
+
 /**
  * micro_variadic_expand macro
  * @note : Wrapper for template variadic parameter folf expression, simplify reading.
@@ -275,4 +277,4 @@ constexpr uint32_t micro_array_size = ( Count > 0 ) ? Count : 1;
  * @brief Define a wrapper for std::move support for types.
  **/
 template<typename Type>
-concept micro_is_movable = std::is_move_constructible<Type>::value && std::is_move_assignable<Type>::value;
+concept micro_is_movable = std::is_move_constructible_v<Type> && std::is_move_assignable_v<Type>;
