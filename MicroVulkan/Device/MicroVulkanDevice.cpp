@@ -134,33 +134,30 @@ uint32_t MicroVulkanDevice::CreatePhysicalScore(
     return device_score;
 }
 
-void MicroVulkanDevice::SelectPhysical( 
-    const MicroVulkanSpecification& specification, 
+void MicroVulkanDevice::SelectPhysical(
+    const MicroVulkanSpecification& specification,
     const MicroVulkanInstance& instance,
-    std::vector<VkPhysicalDevice>& physical_list 
+    std::vector<VkPhysicalDevice>& physical_list
 ) {
+    const auto& surface = instance.GetSurface( );
+    auto device_counter = (uint32_t)0;
     auto device_score = (uint32_t)0;
-    auto device_id    = UINT32_MAX;
-    auto list_size    = (uint32_t)physical_list.size( );
-    auto surface      = instance.GetSurface( );
 
-    while ( list_size-- > 0 ) {
-        auto physical = physical_list[ list_size ];
-        auto score    = CreatePhysicalScore( specification, surface, physical );
+    for ( const auto& physical : physical_list ) {
+        const auto score = CreatePhysicalScore( specification, surface, physical );
 
         if ( device_score < score ) {
             device_score = score;
-            device_id    = list_size;
+            m_physical   = physical;
         }
     }
-    
-    m_physical = physical_list[ device_id ];
 
-    if ( vk::IsValid( m_physical ) ) {
-        vk::GetPhysicalSpecification( m_physical, surface, m_specification );
+    if ( !vk::IsValid( m_physical ) )
+        return;
 
-        vkGetPhysicalDeviceMemoryProperties( m_physical, micro_ptr( m_memory ) );
-    }
+    vk::GetPhysicalSpecification( m_physical, surface, m_specification );
+
+    vkGetPhysicalDeviceMemoryProperties( m_physical, micro_ptr( m_memory ) );
 }
 
 bool MicroVulkanDevice::CreatePhysical( 

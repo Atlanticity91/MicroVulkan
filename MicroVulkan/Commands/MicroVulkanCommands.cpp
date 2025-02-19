@@ -43,7 +43,7 @@ bool MicroVulkanCommands::Create(
 	const MicroVulkanQueues& queues,
 	const MicroVulkanSwapchain& swapchain
 ) {
-	auto state = false;
+	auto state = true;
 	auto type  = (uint32_t)vk::QUEUE_TYPE_GRAPHICS;
 
 	while ( state && type < vk::QUEUE_TYPE_COUNT ) {
@@ -51,7 +51,7 @@ bool MicroVulkanCommands::Create(
 		auto pool	   = MicroVulkanCommandPool{ };
 
 		if ( state = CreateCommandPool( device, pool_spec, pool ) ) {
-			if ( CreateCommandBuffers( device, VK_COMMAND_BUFFER_LEVEL_PRIMARY, 0, pool_spec.PrimayCount, pool ) ) {
+			if ( state = CreateCommandBuffers( device, VK_COMMAND_BUFFER_LEVEL_PRIMARY, 0, pool_spec.PrimayCount, pool ) ) {
 				if ( pool_spec.SecondaryCount > 0 )
 					state = CreateCommandBuffers( device, VK_COMMAND_BUFFER_LEVEL_SECONDARY, pool_spec.PrimayCount, pool_spec.SecondaryCount, pool );
 			}
