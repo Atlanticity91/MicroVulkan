@@ -45,7 +45,7 @@ bool MicroVulkanInstance::Create(
     const MicroVulkanSpecification& specification
 ) {
     return  CreateInstance( specification ) &&
-            CreateDebugMessenger( )  &&
+            CreateDebugMessenger( )         &&
             CreateSurface( window );
 }
 
@@ -92,7 +92,7 @@ bool MicroVulkanInstance::CreateDebugMessenger( ) {
 }
 
 bool MicroVulkanInstance::CreateSurface( const MicroVulkanWindow& window ) {
-    return window.CreateSurface( m_instance, m_surface );
+    return window.CreateVKSurface( m_instance, m_surface );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

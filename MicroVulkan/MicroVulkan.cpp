@@ -154,7 +154,7 @@ void MicroVulkan::CreateInstanceExtensionsSpec(
 	const MicroVulkanWindow& window,
 	MicroVulkanSpecification& specification 
 ) {
-	window.GetExtensions( specification.InstanceExtensions );
+	window.GetVKExtensions( specification.InstanceExtensions );
 
 	specification.InstanceExtensions.emplace_back( VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME );
 
