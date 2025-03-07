@@ -66,7 +66,10 @@ public:
 	void Destroy( );
 
 private:
-	void PreSelectPhysical( std::vector<VkPhysicalDevice>& physical_list );
+	void PreSelectPhysical( 
+		const uint32_t api_version, 
+		std::vector<VkPhysicalDevice>& physical_list 
+	);
 
 	uint32_t CreatePhysicalScore( 
 		const MicroVulkanSpecification& specification,

@@ -99,52 +99,70 @@ bool MicroVulkanInstance::CreateSurface( const MicroVulkanWindow& window ) {
 //		===	PRIVATE STATIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 VkBool32 MicroVulkanInstance::DebugCallback(
-    VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
-    VkDebugUtilsMessageTypeFlagsEXT messageType,
-    const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
-    void* pUserData
+    VkDebugUtilsMessageSeverityFlagBitsEXT severity,
+    VkDebugUtilsMessageTypeFlagsEXT type,
+    const VkDebugUtilsMessengerCallbackDataEXT* callback_data,
+    void* user_data
 ) {
-    micro_unused( pUserData );
+    micro_unused( user_data );
 
-    auto message = std::string{ "" };
+    auto queues   = std::string{ "Queues :\n" };
+    auto queue_id = callback_data->queueLabelCount;
 
-    /*
-    message += vk::to_string( static_cast<vk::DebugUtilsMessageSeverityFlagBitsEXT>( messageSeverity ) ) + ": " +
-        vk::to_string( static_cast<vk::DebugUtilsMessageTypeFlagsEXT>( messageTypes ) ) + ":\n";
-    message += std::string( "\t" ) + "messageIDName   = <" + pCallbackData->pMessageIdName + ">\n";
-    message += std::string( "\t" ) + "messageIdNumber = " + std::to_string( pCallbackData->messageIdNumber ) + "\n";
-    message += std::string( "\t" ) + "message         = <" + pCallbackData->pMessage + ">\n";
-    if ( 0 < pCallbackData->queueLabelCount ) {
-        message += std::string( "\t" ) + "Queue Labels:\n";
-        for ( uint32_t i = 0; i < pCallbackData->queueLabelCount; i++ ) {
-            message += std::string( "\t\t" ) + "labelName = <" + pCallbackData->pQueueLabels[ i ].pLabelName + ">\n";
-        }
+    while ( queue_id-- > 0 )
+        queues += std::format( "\t%s\n", callback_data->pQueueLabels[ queue_id ].pLabelName );
+
+    auto commands   = std::string{ "Commands :\n" };
+    auto command_id = callback_data->cmdBufLabelCount;
+
+    while ( command_id-- > 0 )
+        commands += std::format( "\t%s\n", callback_data->pCmdBufLabels[ command_id ].pLabelName );
+
+    auto objects   = std::string{ "Dump : \n" };
+    auto object_id = callback_data->objectCount;
+
+    while ( object_id-- > 0 ) {
+        const auto& object = callback_data->pObjects[ object_id ];
+
+        objects += std::format( 
+            "\t[ %u ] %s : %s \n", 
+            object.objectHandle, 
+            vk::ToString( object.objectType ), 
+            object.pObjectName 
+        );
     }
-    if ( 0 < pCallbackData->cmdBufLabelCount ) {
-        message += std::string( "\t" ) + "CommandBuffer Labels:\n";
-        for ( uint32_t i = 0; i < pCallbackData->cmdBufLabelCount; i++ ) {
-            message += std::string( "\t\t" ) + "labelName = <" + pCallbackData->pCmdBufLabels[ i ].pLabelName + ">\n";
-        }
-    }
-    if ( 0 < pCallbackData->objectCount ) {
-        for ( uint32_t i = 0; i < pCallbackData->objectCount; i++ ) {
-            message += std::string( "\t" ) + "Object " + std::to_string( i ) + "\n";
-            message += std::string( "\t\t" ) + "objectType   = " + vk::to_string( static_cast<vk::ObjectType>( pCallbackData->pObjects[ i ].objectType ) ) + "\n";
-            message += std::string( "\t\t" ) + "objectHandle = " + std::to_string( pCallbackData->pObjects[ i ].objectHandle ) + "\n";
-            if ( pCallbackData->pObjects[ i ].pObjectName ) {
-                message += std::string( "\t\t" ) + "objectName   = <" + pCallbackData->pObjects[ i ].pObjectName + ">\n";
-            }
-        }
-    }
-    */
 
-    #ifdef _WIN32
-    _CrtDbgReport( _CRT_ASSERT, "Vulkan", pCallbackData->messageIdNumber, pCallbackData->pMessageIdName, pCallbackData->pMessage );
-    #else
-    printf( "%s\n", message.c_str( ) );
-    #endif
+    const auto formated_message = std::format( 
+        "[ VK - %s : %s ]%s : %u\n%s\n%s\n%s\n%s\n",
+        vk::ToString( type ),
+        vk::ToString( severity ),
+        callback_data->pMessageIdName, 
+        callback_data->messageIdNumber, 
+        callback_data->messageIdNumber,
+        queues,
+        commands,
+        objects
+    );
+    const auto* debug_message = formated_message.c_str( );
 
-    return VK_FALSE;
+    switch ( severity ) {
+        case VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT :
+        case VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT    :
+            micro::log_info( "%s", debug_message );
+            break;
+
+        case VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT: 
+            micro::log_warn( "%s", debug_message );
+            break;
+
+        case VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT:
+            micro::log_errr( "%s", debug_message );
+            break;
+
+        default : break;
+    }
+
+    return ( severity < VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT ) ? VK_FALSE : VK_TRUE;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

@@ -34,6 +34,7 @@
 #include "MicroCore.h"
 
 #define VK_UNUSED_FLAG 0
+#define VK_UNDEFINED_STRING "VK_UNDEFINED"
 
 typedef VkRect2D VkScissor;
 
@@ -349,10 +350,15 @@ namespace vk {
 
 	MICRO_API void DestroyQueryPool( const VkDevice& device, VkQueryPool& query_pool );
 
-	MICRO_API VkResult WaitForFences(
+	MICRO_API VkResult WaitForFence(
 		const VkDevice& device,
 		const VkFence& fence,
 		const uint64_t wait_time
+	);
+
+	MICRO_API VkResult ResetFence( 
+		const VkDevice& device, 
+		const VkFence& fence 
 	);
 
 	MICRO_API void CmdImageBarrier(
@@ -422,6 +428,19 @@ namespace vk {
 		const VkCommandBuffer& commands,
 		const uint32_t start_id,
 		const std::vector<BufferBindSpecification>& buffer_binds
+	);
+
+	MICRO_API VkResult AcquireNextImage(
+		const VkDevice device,
+		const VkSwapchainKHR swapchain,
+		const uint64_t timeout,
+		const VkSemaphore semaphore,
+		uint32_t& image_index
+	);
+
+	MICRO_API VkResult QueuePresent( 
+		const VkQueue queue, 
+		const VkPresentInfoKHR& present_info
 	);
 
 	MICRO_API void EnumerateInstanceExtension(
@@ -508,6 +527,16 @@ namespace vk {
 		const VkPipelineCache& pipeline_cache,
 		std::vector<uint8_t>& cache_data
 	);
+
+	MICRO_API micro_string ToString(
+		const VkDebugUtilsMessageSeverityFlagBitsEXT debug_severity
+	);
+
+	MICRO_API micro_string ToString(
+		const VkDebugUtilsMessageTypeFlagsEXT debug_type
+	);
+
+	MICRO_API micro_string ToString( const VkObjectType object_type );
 
 	template<typename VkObject>
 		requires IsVkObject<VkObject>

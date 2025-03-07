@@ -94,17 +94,20 @@ void MicroVulkanDevice::Destroy( ) {
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PRIVATE ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-void MicroVulkanDevice::PreSelectPhysical( std::vector<VkPhysicalDevice>& physical_list ) {
+void MicroVulkanDevice::PreSelectPhysical( 
+    const uint32_t api_version,
+    std::vector<VkPhysicalDevice>& physical_list
+) {
     auto properties = VkPhysicalDeviceProperties{ };
     auto list_first = physical_list.begin( );
     auto list_size  = physical_list.size( );
-
+    
     while ( list_size-- > 0 ) {
         auto physical = physical_list[ list_size ];
 
-        vkGetPhysicalDeviceProperties( physical, &properties );
+        vkGetPhysicalDeviceProperties( physical, micro_ptr( properties ) );
 
-        if ( properties.deviceType < 1 || properties.deviceType > 2 )
+        if ( properties.apiVersion < api_version || properties.deviceType != VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU )
             physical_list.erase( list_first + list_size );
     }
 }
@@ -120,7 +123,7 @@ uint32_t MicroVulkanDevice::CreatePhysicalScore(
     vk::GetPhysicalSpecification( physical, surface, physical_spec );
 
     if ( 
-        GetPhysicalHasExtensions( specification, physical )  &&
+        GetPhysicalHasExtensions( specification, physical )    &&
         GetPhysicalHasFeatures( specification, physical_spec ) &&
         GetPhysicalHasDepth( specification, physical )
     ) {
@@ -141,7 +144,7 @@ void MicroVulkanDevice::SelectPhysical(
 ) {
     const auto& surface = instance.GetSurface( );
     auto device_counter = (uint32_t)0;
-    auto device_score = (uint32_t)0;
+    auto device_score   = (uint32_t)0;
 
     for ( const auto& physical : physical_list ) {
         const auto score = CreatePhysicalScore( specification, surface, physical );
@@ -168,7 +171,7 @@ bool MicroVulkanDevice::CreatePhysical(
 
     vk::EnumeratePhysicalDevices( instance, physical_list );
 
-    PreSelectPhysical( physical_list );
+    PreSelectPhysical( specification.Application.apiVersion, physical_list );
     SelectPhysical( specification, instance, physical_list );
 
     return vk::IsValid( m_physical );

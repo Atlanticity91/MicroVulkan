@@ -208,7 +208,7 @@ VkResult MicroVulkanRenderContext::Submit(
 
 		result = vkQueueSubmit( Queue, 1, micro_ptr( specification ), Sync->Signal );
 
-		vk::WaitForFences( device, Sync->Signal, UINT32_MAX );
+		vk::WaitForFence( device, Sync->Signal, UINT32_MAX );
 	}
 
 	return result;

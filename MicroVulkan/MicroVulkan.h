@@ -113,7 +113,10 @@ private:
 
 	void DestroyRenderContext( MicroVulkanRenderContext& render_context );
 
-	void Recreate( const MicroVulkanWindow& window );
+	void Recreate( 
+		const MicroVulkanWindow& window,
+		MicroVulkanRenderContext& render_context
+	);
 
 public:
 	const MicroVulkanInstance& GetInstance( ) const;

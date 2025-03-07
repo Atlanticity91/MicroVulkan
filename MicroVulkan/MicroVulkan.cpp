@@ -78,18 +78,23 @@ bool MicroVulkan::Acquire(
 	MicroVulkanRenderContext& render_context,
 	bool& need_resize
 ) {
-	auto success = true;
+	auto success = false;
 	auto result  = CreateRenderContext( render_context );
 	
 	if ( need_resize || result == VK_ERROR_OUT_OF_DATE_KHR ) {
-		Recreate( window );
+		Recreate( window, render_context );
 
 		need_resize = false;
-		success		= false;
-	} else if ( result == VK_SUCCESS || result == VK_SUBOPTIMAL_KHR )
-		vkResetFences( m_device, 1, micro_ptr( render_context.Sync->Signal ) );
-	else 
-		throw std::runtime_error( "[ VK - FAIL ] Swapchain image acquisition failed" );
+
+		result = CreateRenderContext( render_context );
+	}
+	
+	if ( result == VK_SUCCESS || result == VK_SUBOPTIMAL_KHR ) {
+		success = true;
+
+		vk::WaitForFence( m_device, render_context.Sync->Signal, UINT64_MAX );
+		vk::ResetFence( m_device, render_context.Sync->Signal );
+	}
 
 	return success;
 }
@@ -110,14 +115,13 @@ void MicroVulkan::Present(
 	bool& need_resize
 ) {
 	auto specification = CreatePresentSpec( render_context );
-	auto result		   = vkQueuePresentKHR( render_context.Queue, micro_ptr( specification ) );
+	auto result		   = vk::QueuePresent( render_context.Queue, specification );
 
 	if ( need_resize || result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR ) {
-		Recreate( window );
+		Recreate( window, render_context );
 
 		need_resize = false;
-	} else if ( result != VK_SUCCESS )
-		throw std::runtime_error( "[ VK - FAIL ] Swapchain image presentation failed" );
+	}
 
 	DestroyRenderContext( render_context );
 
@@ -205,10 +209,8 @@ VkResult MicroVulkan::CreateRenderContext(
 	render_context.Sync			 = m_synchronization.Acquire( m_frame_id );
 	render_context.Queue		 = m_queues.Acquire( vk::QUEUE_TYPE_GRAPHICS );
 	render_context.CommandBuffer = m_commands.Acquire( vk::QUEUE_TYPE_GRAPHICS, VK_COMMAND_BUFFER_LEVEL_PRIMARY );
-
-	vk::WaitForFences( m_device, render_context.Sync->Signal, UINT64_MAX );
 	
-	return vkAcquireNextImageKHR( m_device, m_swapchain, UINT64_MAX, render_context.Sync->Presentable, VK_NULL_HANDLE, micro_ptr( render_context.ImageID ) );
+	return vk::AcquireNextImage( m_device, m_swapchain, UINT64_MAX, render_context.Sync->Presentable, render_context.ImageID );
 }
 
 VkPresentInfoKHR MicroVulkan::CreatePresentSpec(
@@ -233,8 +235,13 @@ void MicroVulkan::DestroyRenderContext( MicroVulkanRenderContext& render_context
 	m_queues.Release( render_context.Queue );
 }
 
-void MicroVulkan::Recreate( const MicroVulkanWindow& window ) {
+void MicroVulkan::Recreate( 
+	const MicroVulkanWindow& window,
+	MicroVulkanRenderContext& render_context
+) {
 	const auto dimensions = window.GetVKDimensions( );
+
+	DestroyRenderContext( render_context );
 
 	m_device.Wait( );
 

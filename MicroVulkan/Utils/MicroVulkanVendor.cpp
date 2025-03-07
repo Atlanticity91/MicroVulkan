@@ -530,14 +530,14 @@ namespace vk {
 		const VkDescriptorPool& descriptor_pool,
 		std::vector<VkDescriptorSet>& descriptor_list
 	) {
-		if ( !IsValid( device ) || !IsValid( descriptor_pool ) )
+		const auto descriptor_count = (uint32_t)descriptor_list.size( );
+
+		if ( !IsValid( device ) || !IsValid( descriptor_pool ) || descriptor_count == 0 )
 			return;
 
 		const auto* list_data = descriptor_list.data( );
-		auto descriptor_count = (uint32_t)descriptor_list.size( );
 
-		if ( descriptor_count > 0 )
-			vkFreeDescriptorSets( device, descriptor_pool, descriptor_count, list_data );
+		vkFreeDescriptorSets( device, descriptor_pool, descriptor_count, list_data );
 	}
 
 	VkResult CreateShader(
@@ -609,7 +609,7 @@ namespace vk {
 		query_pool = VK_NULL_HANDLE;
 	}
 
-	VkResult WaitForFences(
+	VkResult WaitForFence(
 		const VkDevice& device,
 		const VkFence& fence,
 		const uint64_t wait_time
@@ -618,6 +618,13 @@ namespace vk {
 		micro_assert( IsValid( fence ), "Vulkan Fence must be valid to use this function" );
 
 		return vkWaitForFences( device, 1, micro_ptr( fence ), VK_TRUE, wait_time );
+	}
+
+	VkResult ResetFence( const VkDevice& device, const VkFence& fence ) {
+		micro_assert( IsValid( device ), "Vulkan Device must be valid to use this function" );
+		micro_assert( IsValid( fence ), "Vulkan Fence must be valid to use this function" );
+
+		return vkResetFences( device, 1, micro_ptr( fence ) );
 	}
 
 	void CmdImageBarrier(
@@ -648,24 +655,22 @@ namespace vk {
 	) {
 		micro_assert( IsValid( commands ), "You can't execute command on an invalid command buffer" );
 
-		if ( !IsValid( commands ) )
+		const auto barrier_count = (uint32_t)barriers.size( );
+
+		if ( !IsValid( commands ) || barrier_count == 0 )
 			return;
 
-		auto barrier_count = (uint32_t)barriers.size( );
+		const auto* barrier_data = barriers.data( );
 
-		if ( barrier_count > 0 ) {
-			const auto* barrier_data = barriers.data( );
-
-			vkCmdPipelineBarrier(
-				commands,
-				specification.SrcStageMask,
-				specification.DstStageMask,
-				specification.DependencyFlags,
-				0, VK_NULL_HANDLE,
-				0, VK_NULL_HANDLE,
-				barrier_count, barrier_data
-			);
-		}
+		vkCmdPipelineBarrier(
+			commands,
+			specification.SrcStageMask,
+			specification.DstStageMask,
+			specification.DependencyFlags,
+			0, VK_NULL_HANDLE,
+			0, VK_NULL_HANDLE,
+			barrier_count, barrier_data
+		);
 	}
 
 	void CmdBufferBarrier(
@@ -696,24 +701,22 @@ namespace vk {
 	) {
 		micro_assert( IsValid( commands ), "You can't execute command on an invalid command buffer" );
 
-		if ( !IsValid( commands ) )
+		const auto barrier_count = (uint32_t)barriers.size( );
+
+		if ( !IsValid( commands ) || barrier_count == 0 )
 			return;
-		
-		auto barrier_count = (uint32_t)barriers.size( );
 
-		if ( barrier_count > 0 ) {
-			const auto* barrier_data = barriers.data( );
+		const auto* barrier_data = barriers.data( );
 
-			vkCmdPipelineBarrier(
-				commands,
-				specification.SrcStageMask,
-				specification.DstStageMask,
-				specification.DependencyFlags,
-				0, VK_NULL_HANDLE,
-				barrier_count, barrier_data,
-				0, VK_NULL_HANDLE
-			);
-		}
+		vkCmdPipelineBarrier(
+			commands,
+			specification.SrcStageMask,
+			specification.DstStageMask,
+			specification.DependencyFlags,
+			0, VK_NULL_HANDLE,
+			barrier_count, barrier_data,
+			0, VK_NULL_HANDLE
+		);
 	}
 
 	void CmdSetViewport(
@@ -732,11 +735,14 @@ namespace vk {
 	) {
 		micro_assert( IsValid( commands ), "You can't execute command on an invalid command buffer" );
 
-		const auto* viewport_data = viewports.data( );
-		auto viewport_count		  = (uint32_t)viewports.size( );
+		const auto viewport_count = (uint32_t)viewports.size( );
 
-		if ( viewport_count > 0 )
-			vkCmdSetViewport( commands, start_id, viewport_count, viewport_data );
+		if ( viewport_count == 0 )
+			return;
+
+		const auto* viewport_data = viewports.data( );
+		
+		vkCmdSetViewport( commands, start_id, viewport_count, viewport_data );
 	}
 
 	void CmdSetScissor(
@@ -754,12 +760,15 @@ namespace vk {
 		const std::vector<VkScissor>& scissors
 	) {
 		micro_assert( IsValid( commands ), "You can't execute command on an invalid command buffer" );
-
-		const auto* scissor_data = scissors.data( );
-		auto scissor_count = (uint32_t)scissors.size( );
+		
+		const auto scissor_count = (uint32_t)scissors.size( );
 
 		if ( scissor_count > 0 )
-			vkCmdSetScissor( commands, start_id, scissor_count, scissor_data );
+			return;
+
+		const auto* scissor_data = scissors.data( );
+
+		vkCmdSetScissor( commands, start_id, scissor_count, scissor_data );
 	}
 
 	void CmdBindDescriptorSets(
@@ -771,11 +780,14 @@ namespace vk {
 	) {
 		micro_assert( IsValid( commands ), "You can't execute command on an invalid command buffer" );
 
-		const auto* descriptor_data = descriptor_sets.data( );
-		auto descriptor_count		= (uint32_t)descriptor_sets.size( );
+		const auto descriptor_count = (uint32_t)descriptor_sets.size( );
 
-		if ( descriptor_count > 0 )
-			vkCmdBindDescriptorSets( commands, bind_point, layout, start_id, descriptor_count, descriptor_data, 0, VK_NULL_HANDLE );
+		if ( descriptor_count == 0 )
+			return;
+
+		const auto* descriptor_data = descriptor_sets.data( );
+
+		vkCmdBindDescriptorSets( commands, bind_point, layout, start_id, descriptor_count, descriptor_data, 0, VK_NULL_HANDLE );
 	}
 
 	void CmdBindDescriptorSets(
@@ -788,13 +800,16 @@ namespace vk {
 	) {
 		micro_assert( IsValid( commands ), "You can't execute command on an invalid command buffer" );
 		
+		const auto descriptor_count = (uint32_t)descriptor_sets.size( );
+
+		if ( descriptor_count == 0 )
+			return;
+
 		const auto* descriptor_data = descriptor_sets.data( );
 		const auto* offset_data		= dymanic_offsets.data( );
-		auto descriptor_count		= (uint32_t)descriptor_sets.size( );
-		auto offset_count			= (uint32_t)dymanic_offsets.size( );
+		const auto offset_count		= (uint32_t)dymanic_offsets.size( );
 
-		if ( descriptor_count > 0 )
-			vkCmdBindDescriptorSets( commands, bind_point, layout, start_id, descriptor_count, descriptor_data, offset_count, offset_data );
+		vkCmdBindDescriptorSets( commands, bind_point, layout, start_id, descriptor_count, descriptor_data, offset_count, offset_data );
 	}
 
 	std::vector<VkBuffer> EnumerateBuffers( const std::vector<BufferBindSpecification>& buffer_binds ) {
@@ -804,7 +819,7 @@ namespace vk {
 		buffers.resize( buffer_id );
 
 		while ( buffer_id-- > 0 ) {
-			auto& buffer = buffer_binds[ buffer_id ].Buffer;
+			const auto& buffer = buffer_binds[ buffer_id ].Buffer;
 
 			if ( IsValid( buffer ) )
 				buffers[ buffer_id ] = buffer;
@@ -820,7 +835,7 @@ namespace vk {
 		offsets.resize( offset_id );
 
 		while ( offset_id-- > 0 ) {
-			auto& buffer = buffer_binds[ offset_id ];
+			const auto& buffer = buffer_binds[ offset_id ];
 
 			if ( IsValid( buffer.Buffer ) )
 				offsets[ offset_id ] = buffer.Offset;
@@ -836,14 +851,40 @@ namespace vk {
 	) {
 		micro_assert( IsValid( commands ), "You can't execute command on an invalid command buffer" );
 
-		auto buffers			= EnumerateBuffers( buffer_binds );
-		auto offsets			= EnumerateBufferOffsets( buffer_binds );
-		auto buffer_count		= (uint32_t)buffers.size( );
+		const auto buffers		= EnumerateBuffers( buffer_binds );
+		const auto buffer_count = (uint32_t)buffers.size( );
+
+		if ( buffer_count == 0 )
+			return;
+
+		const auto offsets		= EnumerateBufferOffsets( buffer_binds );
 		const auto* buffer_data = buffers.data( );
 		const auto* offset_data = offsets.data( );
 
-		if ( buffer_count > 0 )
-			vkCmdBindVertexBuffers( commands, start_id, buffer_count, buffer_data, offset_data );
+		vkCmdBindVertexBuffers( commands, start_id, buffer_count, buffer_data, offset_data );
+	}
+
+	VkResult AcquireNextImage(
+		const VkDevice device,
+		const VkSwapchainKHR swapchain,
+		const uint64_t timeout,
+		const VkSemaphore semaphore,
+		uint32_t& image_index
+	) {
+		micro_assert( IsValid( device ), "Vulkan Device must be valid to use this function" );
+		micro_assert( IsValid( swapchain ), "Vulkan swapchain must be valid to use this function" );
+		micro_assert( IsValid( semaphore ), "Vulkan semaphore must be valid to use this function" );
+
+		return vkAcquireNextImageKHR( device, swapchain, timeout, semaphore, VK_NULL_HANDLE, micro_ptr( image_index ) );
+	}
+
+	VkResult QueuePresent(
+		const VkQueue queue,
+		const VkPresentInfoKHR& present_info
+	) {
+		micro_assert( IsValid( queue ), "You can't present to screen with an invalid queue" );
+
+		return vkQueuePresentKHR( queue, micro_ptr( present_info ) );
 	}
 
 	void EnumerateInstanceExtension( std::vector<VkExtensionProperties>& extension_list ) {
@@ -966,7 +1007,7 @@ namespace vk {
 		auto has_present = VK_FALSE;
 		auto family_id   = (uint32_t)0;
 
-		for ( auto& family : families ) {
+		for ( const auto& family : families ) {
 			vkGetPhysicalDeviceSurfaceSupportKHR( physical, family_id, surface, micro_ptr( has_present ) );
 
 			if ( has_present && family.queueFlags & VK_QUEUE_GRAPHICS_BIT ) {
@@ -985,7 +1026,7 @@ namespace vk {
 	) { 
 		auto family_id = (uint32_t)0;
 
-		for ( auto& family : families ) {
+		for ( const auto& family : families ) {
 			if (
 				 ( family.queueFlags & VK_QUEUE_TRANSFER_BIT		 ) &&
 				!( family.queueFlags & VK_QUEUE_GRAPHICS_BIT		 ) &&
@@ -1011,7 +1052,7 @@ namespace vk {
 	) { 
 		auto family_id = (uint32_t)0;
 
-		for ( auto& family : families ) {
+		for ( const auto& family : families ) {
 			if (
 				 ( family.queueFlags & VK_QUEUE_COMPUTE_BIT			 ) &&
 				!( family.queueFlags & VK_QUEUE_GRAPHICS_BIT		 ) && 
@@ -1113,5 +1154,97 @@ namespace vk {
 		return result;
 	}
 
-};
+	micro_string ToString(
+		const VkDebugUtilsMessageSeverityFlagBitsEXT debug_severity
+	) {
+		switch ( debug_severity ) {
+			case VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT : return "VK_SEVERITY_VERBOSE";
+			case VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT	 : return "VK_SEVERITY_INFO";
+			case VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT : return "VK_SEVERITY_WARNING";
+			case VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT   : return "VK_SEVERITY_ERROR";
 
+			default : break;
+		}
+
+		return VK_UNDEFINED_STRING;
+	}
+
+	micro_string ToString(
+		const VkDebugUtilsMessageTypeFlagsEXT debug_type
+	) {
+		switch ( debug_type ) {
+			case VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT				: return "VK_TYPE_GENERAL";
+			case VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT				: return "VK_TYPE_VALIDATION";
+			case VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT			: return "VK_TYPE_PERFORMANCE";
+			case VK_DEBUG_UTILS_MESSAGE_TYPE_DEVICE_ADDRESS_BINDING_BIT_EXT : return "VK_TYPE_DEVICE_ADDRESS_BINDING";
+			
+			default : break;
+		}
+
+		return VK_UNDEFINED_STRING;
+	}
+	
+	micro_string ToString( const VkObjectType object_type ) {
+		switch ( object_type ) {
+			case VK_OBJECT_TYPE_UNKNOWN							: return "VK_TYPE_UNKNOWN";
+			case VK_OBJECT_TYPE_INSTANCE						: return "VK_TYPE_INSTANCE";
+			case VK_OBJECT_TYPE_PHYSICAL_DEVICE					: return "VK_TYPE_PHYSICAL_DEVICE";
+			case VK_OBJECT_TYPE_DEVICE							: return "VK_TYPE_DEVICE";
+			case VK_OBJECT_TYPE_QUEUE							: return "VK_TYPE_QUEUE";
+			case VK_OBJECT_TYPE_SEMAPHORE						: return "VK_TYPE_SEMAPHORE";
+			case VK_OBJECT_TYPE_COMMAND_BUFFER					: return "VK_TYPE_COMMAND_BUFFER";
+			case VK_OBJECT_TYPE_FENCE							: return "VK_TYPE_FENCE";
+			case VK_OBJECT_TYPE_DEVICE_MEMORY					: return "VK_TYPE_DEVICE_MEMORY";
+			case VK_OBJECT_TYPE_BUFFER							: return "VK_TYPE_BUFFER";
+			case VK_OBJECT_TYPE_IMAGE							: return "VK_TYPE_IMAGE";
+			case VK_OBJECT_TYPE_EVENT							: return "VK_TYPE_EVENT";
+			case VK_OBJECT_TYPE_QUERY_POOL						: return "VK_TYPE_QUERY_POOL";
+			case VK_OBJECT_TYPE_BUFFER_VIEW						: return "VK_TYPE_BUFFER_VIEW";
+			case VK_OBJECT_TYPE_IMAGE_VIEW						: return "VK_TYPE_IMAGE_VIEW";
+			case VK_OBJECT_TYPE_SHADER_MODULE					: return "VK_TYPE_SHADER_MODULE";
+			case VK_OBJECT_TYPE_PIPELINE_CACHE					: return "VK_TYPE_PIPELINE_CACHE";
+			case VK_OBJECT_TYPE_PIPELINE_LAYOUT					: return "VK_TYPE_PIPELINE_LAYOUT";
+			case VK_OBJECT_TYPE_RENDER_PASS						: return "VK_TYPE_RENDER_PASS";
+			case VK_OBJECT_TYPE_PIPELINE						: return "VK_TYPE_PIPELINE";
+			case VK_OBJECT_TYPE_DESCRIPTOR_SET_LAYOUT			: return "VK_TYPE_DESCRIPTOR_SET_LAYOUT";
+			case VK_OBJECT_TYPE_SAMPLER							: return "VK_TYPE_SAMPLER";
+			case VK_OBJECT_TYPE_DESCRIPTOR_POOL					: return "VK_TYPE_DESCRIPTOR_POOL";
+			case VK_OBJECT_TYPE_DESCRIPTOR_SET					: return "VK_TYPE_DESCRIPTOR_SET";
+			case VK_OBJECT_TYPE_FRAMEBUFFER						: return "VK_TYPE_FRAMEBUFFER";
+			case VK_OBJECT_TYPE_COMMAND_POOL					: return "VK_TYPE_COMMAND_POOL";
+			case VK_OBJECT_TYPE_SAMPLER_YCBCR_CONVERSION		: return "VK_TYPE_SAMPLER_YCBCR_CONVERSION";
+			case VK_OBJECT_TYPE_DESCRIPTOR_UPDATE_TEMPLATE		: return "VK_TYPE_DESCRIPTOR_UPDATE_TEMPLATE";
+			case VK_OBJECT_TYPE_PRIVATE_DATA_SLOT				: return "VK_TYPE_PRIVATE_DATA_SLOT";
+			case VK_OBJECT_TYPE_SURFACE_KHR						: return "VK_TYPE_SURFACE";
+			case VK_OBJECT_TYPE_SWAPCHAIN_KHR					: return "VK_TYPE_SWAPCHAIN";
+			case VK_OBJECT_TYPE_DISPLAY_KHR						: return "VK_TYPE_DISPLAY";
+			case VK_OBJECT_TYPE_DISPLAY_MODE_KHR				: return "VK_TYPE_DISPLAY_MODE";
+			case VK_OBJECT_TYPE_DEBUG_REPORT_CALLBACK_EXT		: return "VK_TYPE_DEBUG_REPORT_CALLBACK";
+			case VK_OBJECT_TYPE_VIDEO_SESSION_KHR				: return "VK_TYPE_VIDEO_SESSION";
+			case VK_OBJECT_TYPE_VIDEO_SESSION_PARAMETERS_KHR	: return "VK_TYPE_VIDEO_SESSION_PARAMETERS";
+			case VK_OBJECT_TYPE_CU_MODULE_NVX					: return "VK_TYPE_CU_MODULE_NVX";
+			case VK_OBJECT_TYPE_CU_FUNCTION_NVX					: return "VK_TYPE_CU_FUNCTION_NVX";
+			case VK_OBJECT_TYPE_DEBUG_UTILS_MESSENGER_EXT		: return "VK_TYPE_DEBUG_UTILS_MESSENGER";
+			case VK_OBJECT_TYPE_ACCELERATION_STRUCTURE_KHR		: return "VK_TYPE_ACCELERATION_STRUCTURE";
+			case VK_OBJECT_TYPE_VALIDATION_CACHE_EXT			: return "VK_TYPE_VALIDATION_CACHE";
+			case VK_OBJECT_TYPE_ACCELERATION_STRUCTURE_NV		: return "VK_TYPE_ACCELERATION_STRUCTURE_NV";
+			case VK_OBJECT_TYPE_PERFORMANCE_CONFIGURATION_INTEL : return "VK_TYPE_PERFORMANCE_CONFIGURATION_INTEL";
+			case VK_OBJECT_TYPE_DEFERRED_OPERATION_KHR			: return "VK_TYPE_DEFERRED_OPERATION";
+			case VK_OBJECT_TYPE_INDIRECT_COMMANDS_LAYOUT_NV		: return "VK_TYPE_INDIRECT_COMMANDS_LAYOUT_NV";
+			case VK_OBJECT_TYPE_CUDA_MODULE_NV					: return "VK_TYPE_CUDA_MODULE_NV";
+			case VK_OBJECT_TYPE_CUDA_FUNCTION_NV				: return "VK_TYPE_CUDA_FUNCTION_NV";
+			case VK_OBJECT_TYPE_BUFFER_COLLECTION_FUCHSIA		: return "VK_TYPE_BUFFER_COLLECTION_FUCHSIA";
+			case VK_OBJECT_TYPE_MICROMAP_EXT					: return "VK_TYPE_MICROMAP";
+			case VK_OBJECT_TYPE_OPTICAL_FLOW_SESSION_NV			: return "VK_TYPE_OPTICAL_FLOW_SESSION_NV";
+			case VK_OBJECT_TYPE_SHADER_EXT						: return "VK_TYPE_SHADER";
+			case VK_OBJECT_TYPE_PIPELINE_BINARY_KHR				: return "VK_TYPE_PIPELINE_BINARY";
+			case VK_OBJECT_TYPE_INDIRECT_COMMANDS_LAYOUT_EXT	: return "VK_TYPE_INDIRECT_COMMANDS_LAYOUT";
+			case VK_OBJECT_TYPE_INDIRECT_EXECUTION_SET_EXT		: return "VK_TYPE_INDIRECT_EXECUTION_SET";
+
+			default : break;
+		}
+
+		return VK_UNDEFINED_STRING;
+	}
+
+};
