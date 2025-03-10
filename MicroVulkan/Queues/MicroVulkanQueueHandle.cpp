@@ -54,6 +54,10 @@ MicroVulkanQueueHandle::operator bool ( ) const {
 	return GetIsValid( );
 }
 
-MicroVulkanQueueHandle::operator VkQueue ( ) const {
+MicroVulkanQueueHandle::operator VkQueue& ( ) {
+	return Queue;
+}
+
+MicroVulkanQueueHandle::operator const VkQueue& ( ) const {
 	return Queue;
 }

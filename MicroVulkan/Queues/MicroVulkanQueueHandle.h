@@ -45,6 +45,8 @@ micro_struct MicroVulkanQueueHandle {
 
 	operator bool ( ) const;
 
-	operator VkQueue ( ) const;
+	operator VkQueue& ( );
+
+	operator const VkQueue& ( ) const;
 
 };

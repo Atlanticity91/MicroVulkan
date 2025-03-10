@@ -438,8 +438,26 @@ namespace vk {
 		uint32_t& image_index
 	);
 
+	MICRO_API VkResult QueueSubmit( 
+		const VkQueue& queue,
+		const VkFence& fence,
+		const VkSubmitInfo& submit
+	);
+
+	MICRO_API VkResult QueueSubmit(
+		const VkQueue& queue,
+		const VkFence& fence,
+		const std::vector<VkSubmitInfo>& submits
+	);
+
+	MICRO_API VkResult QueueSubmit(
+		const VkQueue& queue,
+		const VkFence& fence,
+		const std::initializer_list<VkSubmitInfo> submits
+	);
+
 	MICRO_API VkResult QueuePresent( 
-		const VkQueue queue, 
+		const VkQueue& queue, 
 		const VkPresentInfoKHR& present_info
 	);
 

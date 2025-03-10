@@ -91,22 +91,4 @@ micro_struct MicroVulkanRenderContext {
 
 	void CmdEndRecord( );
 
-	VkResult Submit( const MicroVulkanDevice& device );
-
-	VkResult Submit( 
-		const MicroVulkanDevice& device, 
-		const VkCommandBuffer& secondary_commands 
-	);
-
-	VkResult Submit( 
-		const MicroVulkanDevice& device, 
-		const std::vector<VkCommandBuffer>& secondary_commands 
-	);
-
-	VkResult Submit(
-		const MicroVulkanDevice& device,
-		const std::vector<VkPipelineStageFlags> stages_list,
-		const std::vector<VkCommandBuffer>& secondary_commands
-	);
-
 };

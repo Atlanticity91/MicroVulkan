@@ -67,9 +67,27 @@ public:
 		bool& need_resize
 	);
 
-	MicroVulkanRenderPassInfo CreateRenderPassInfo(
+	MicroVulkanRenderPassInfo AcquireRenderPass(
 		const MicroVulkanRenderContext& render_context,
 		const uint32_t pass_id
+	);
+
+	VkResult Submit( MicroVulkanRenderContext& render_context );
+
+	VkResult Submit(
+		MicroVulkanRenderContext& render_context,
+		const VkCommandBuffer& secondary_commands
+	);
+
+	VkResult Submit(
+		MicroVulkanRenderContext& render_context,
+		const std::vector<VkCommandBuffer>& secondary_commands
+	);
+
+	VkResult Submit(
+		MicroVulkanRenderContext& render_context,
+		const std::vector<VkPipelineStageFlags> stages_list,
+		const std::vector<VkCommandBuffer>& secondary_commands
 	);
 
 	void Present( 

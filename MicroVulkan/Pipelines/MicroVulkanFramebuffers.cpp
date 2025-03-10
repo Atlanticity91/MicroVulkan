@@ -95,7 +95,7 @@ void MicroVulkanFramebuffers::SetClearValue(
         target.Clears[ image_count ] = values[ image_count ];
 }
 
-MicroVulkanRenderPassInfo MicroVulkanFramebuffers::CreateRenderPassInfo(
+MicroVulkanRenderPassInfo MicroVulkanFramebuffers::AcquireRenderPass(
     const uint32_t render_pass_id,
     const uint32_t frame_id,
     const VkRenderPass render_pass

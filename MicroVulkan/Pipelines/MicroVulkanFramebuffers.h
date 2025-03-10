@@ -72,7 +72,7 @@ public:
 		const std::vector<VkClearValue>& values
 	);
 
-	MicroVulkanRenderPassInfo CreateRenderPassInfo(
+	MicroVulkanRenderPassInfo AcquireRenderPass(
 		const uint32_t render_pass_id,
 		const uint32_t frame_id,
 		const VkRenderPass render_pass

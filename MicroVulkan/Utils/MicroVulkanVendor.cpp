@@ -878,8 +878,51 @@ namespace vk {
 		return vkAcquireNextImageKHR( device, swapchain, timeout, semaphore, VK_NULL_HANDLE, micro_ptr( image_index ) );
 	}
 
+	VkResult QueueSubmit(
+		const VkQueue& queue,
+		const VkFence& fence,
+		const uint32_t count,
+		const VkSubmitInfo* submits
+	) {
+		micro_assert( IsValid( queue ), "Vulkan queue must be valid for queue submition" );
+		micro_assert( IsValid( fence ), "Vulkan fence must be valid for queue submition" );
+		micro_assert( count > 0, "You must subit at least one element for queue submition" );
+
+		return vkQueueSubmit( queue, count, submits, fence );
+	}
+
+	VkResult QueueSubmit(
+		const VkQueue& queue,
+		const VkFence& fence,
+		const VkSubmitInfo& submit
+	) {
+		return QueueSubmit( queue, fence, 1, micro_ptr( submit ) );
+	}
+	
+	VkResult QueueSubmit(
+		const VkQueue& queue,
+		const VkFence& fence,
+		const std::vector<VkSubmitInfo>& submits
+	) {
+		const auto* data = submits.data( );
+		const auto count = (uint32_t)submits.size( );
+		
+		return QueueSubmit( queue, fence, count, data );
+	}
+	
+	VkResult QueueSubmit(
+		const VkQueue& queue,
+		const VkFence& fence,
+		const std::initializer_list<VkSubmitInfo> submits
+	) {
+		const auto* data = submits.begin( );
+		const auto count = (uint32_t)submits.size( );
+
+		return QueueSubmit( queue, fence, count, data );
+	}
+
 	VkResult QueuePresent(
-		const VkQueue queue,
+		const VkQueue& queue,
 		const VkPresentInfoKHR& present_info
 	) {
 		micro_assert( IsValid( queue ), "You can't present to screen with an invalid queue" );

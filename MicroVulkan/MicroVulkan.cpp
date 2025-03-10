@@ -79,16 +79,15 @@ bool MicroVulkan::Acquire(
 	bool& need_resize
 ) {
 	auto success = false;
-	auto result  = CreateRenderContext( render_context );
 	
-	if ( need_resize || result == VK_ERROR_OUT_OF_DATE_KHR ) {
+	if ( need_resize ) {
 		Recreate( window, render_context );
 
 		need_resize = false;
-
-		result = CreateRenderContext( render_context );
 	}
-	
+
+	auto result = CreateRenderContext( render_context );
+
 	if ( result == VK_SUCCESS || result == VK_SUBOPTIMAL_KHR ) {
 		success = true;
 
@@ -99,14 +98,74 @@ bool MicroVulkan::Acquire(
 	return success;
 }
 
-MicroVulkanRenderPassInfo MicroVulkan::CreateRenderPassInfo(
+MicroVulkanRenderPassInfo MicroVulkan::AcquireRenderPass(
 	const MicroVulkanRenderContext& render_context,
 	const uint32_t pass_id
 ) {
 	auto render_pass = m_passes.Get( pass_id );
-	auto pass_info   = m_framebuffers.CreateRenderPassInfo( pass_id, render_context.FrameID, render_pass );
+	auto pass_info   = m_framebuffers.AcquireRenderPass( pass_id, render_context.FrameID, render_pass );
 
 	return pass_info;
+}
+
+VkResult MicroVulkan::Submit( MicroVulkanRenderContext& render_context ) {
+	return Submit( 
+		render_context, 
+		{ VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT }, 
+		{ } 
+	);
+}
+
+VkResult MicroVulkan::Submit(
+	MicroVulkanRenderContext& render_context,
+	const VkCommandBuffer& secondary_commands
+) {
+	return Submit( 
+		render_context, 
+		{ VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT }, 
+		{ secondary_commands } 
+	);
+}
+
+VkResult MicroVulkan::Submit(
+	MicroVulkanRenderContext& render_context,
+	const std::vector<VkCommandBuffer>& secondary_commands
+) {
+	return Submit( 
+		render_context,
+		{ VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT },
+		secondary_commands 
+	);
+}
+
+VkResult MicroVulkan::Submit(
+	MicroVulkanRenderContext& render_context,
+	const std::vector<VkPipelineStageFlags> stages_list,
+	const std::vector<VkCommandBuffer>& secondary_commands
+) {
+	auto result = VK_ERROR_UNKNOWN;
+
+	if ( render_context.CommandBuffer.GetIsValid( ) ) {
+		auto specification = VkSubmitInfo{ };
+
+		render_context.CmdExecute( secondary_commands );
+
+		specification.sType				   = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+		specification.pNext				   = VK_NULL_HANDLE;
+		specification.waitSemaphoreCount   = 1;
+		specification.pWaitSemaphores	   = micro_ptr( render_context.Sync->Presentable );
+		specification.pWaitDstStageMask    = stages_list.data( );
+		specification.commandBufferCount   = 1;
+		specification.pCommandBuffers	   = micro_ptr( render_context.CommandBuffer.Buffer );
+		specification.signalSemaphoreCount = 1;
+		specification.pSignalSemaphores	   = micro_ptr( render_context.Sync->Renderable );
+
+		result = vk::QueueSubmit( render_context.Queue, render_context.Sync->Signal, specification );
+
+		vk::WaitForFence( m_device, render_context.Sync->Signal, UINT32_MAX );
+	}
+
+	return result;
 }
 
 void MicroVulkan::Present( 
@@ -241,7 +300,7 @@ void MicroVulkan::Recreate(
 ) {
 	const auto dimensions = window.GetVKDimensions( );
 
-	DestroyRenderContext( render_context );
+	//DestroyRenderContext( render_context );
 
 	m_device.Wait( );
 

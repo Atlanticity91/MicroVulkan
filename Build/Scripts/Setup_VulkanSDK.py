@@ -9,7 +9,7 @@ from Utils import Sha256_Check, Download_File
 class VulkanRequirements :
 
 	# GLOBAL PARAMETERS
-	SDK_Version = '1.3.296.0'
+	SDK_Version = '1.4.304.1'
 	SDK_BaseURL = f'https://sdk.lunarg.com/sdk/download/{SDK_Version}/'
 	SDK_Installer = [
 		# Win32 - x64
@@ -73,8 +73,8 @@ class VulkanRequirements :
 	@classmethod
 	def TryLocalSDK( clss, local_sdk_path ) :
 		if os.path.exists( local_sdk_path ) and local_sdk_path is not None :
-			local_sdk_version = local_sdk_path.split( '\\' )[ -2 ]
-
+			local_sdk_version = local_sdk_path.split( '\\' )[ -1 ]
+			
 			if Version( clss.SDK_Version ) <= Version( local_sdk_version ) :
 				clss.SDK_Version = local_sdk_version
 				
@@ -96,7 +96,7 @@ class VulkanRequirements :
 			quit( )
 
 		local_sdk_path = os.environ.get( 'VULKAN_SDK' )
-		
+
 		if not clss.TryLocalSDK( local_sdk_path ) :
 			print( '> Vulkan SDK is not installed or version is not supported' )
 
